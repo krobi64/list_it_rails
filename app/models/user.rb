@@ -1,7 +1,6 @@
 class User < ApplicationRecord
-  acts_as_authentic do |c|
-    c.crypto_provider = Authlogic::CryptoProviders::BCrypt
-  end
+
+  has_secure_password
 
   has_and_belongs_to_many :lists
 
@@ -13,19 +12,16 @@ class User < ApplicationRecord
             length: { maximum: 100 },
             uniqueness: {
                 case_sensitive: false,
-                if: :will_save_change_to_email?
             }
 
   validates :password,
-            confirmation: { if: :require_password? },
+            confirmation: true,
             length: {
                 minimum: 8,
-                if: :require_password?
             }
   validates :password_confirmation,
             length: {
                 minimum: 8,
-                if: :require_password?
             }
 
 end

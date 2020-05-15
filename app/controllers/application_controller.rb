@@ -1,28 +1,21 @@
 class ApplicationController < ActionController::API
 
-  helper_method :current_user_session, :current_user
+  before_action :authenticate_request
+  attr_reader :current_user
 
-  protected
+  def route_not_found
+    render json: message(:error, 'Not found' ), status: :not_found
+  end
 
-    def handle_unverified_request
-      # raise an exception
-      fail ActionController::InvalidAuthenticityToken
-      # or destroy session, redirect
-      if current_user_session
-        current_user_session.destroy
-      end
-      render json: {status: :error, message: 'Unverified Request'}
-    end
 
   private
 
-    def current_user_session
-      return @current_user_session if defined?(@current_user_session)
-      @current_user_session = UserSession.find
-    end
+  def message(status, payload)
+    { status: status, payload: payload}
+  end
 
-    def current_user
-      return @current_user if defined?(@current_user)
-      @current_user = current_user_session && current_user_session.user
-    end
+  def authenticate_request
+    @current_user = AuthorizeApiRequest.call(request.headers).result
+    render json: {status: :error, payload: 'Not Authorized'}, status: 401 unless @current_user
+  end
 end

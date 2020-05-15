@@ -1,11 +1,16 @@
 Rails.application.routes.draw do
   defaults format: :json do
-    resources :users
-    resources :lists do
-      resources :items
+    resources :users do
+      resources :lists do
+        member do
+          post 'share/:user_id', to: 'lists#share'
+        end
+        resources :items
+      end
     end
-    resources :user_sessions
 
-    root to: 'user_sessions#new'
+    post 'authenticate', to: 'authentication#authenticate'
+
+    match '*unmatched', to: 'application#route_not_found', via: :all
   end
 end
