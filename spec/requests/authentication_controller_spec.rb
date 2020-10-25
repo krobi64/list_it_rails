@@ -8,8 +8,8 @@ RSpec.describe 'Authenticate', type: :request do
       subject { JSON.parse response.body }
 
       before do
-        create :user
-        post authenticate_path, params: {email: 'example@mail.com', password: '123123123'}
+        user = create :user
+        post authenticate_path, params: {email: user.email, password: 'This_Is_A_Basic_P4ssword'}
       end
 
       it 'responds with 200' do
@@ -21,7 +21,7 @@ RSpec.describe 'Authenticate', type: :request do
         expect(subject).to have_key('auth_token')
         decoded_token = JsonWebToken.decode(subject['auth_token'])
         user = User.first
-        expect(decoded_token['user_id']).to eq(user.id)
+        expect(decoded_token['id']).to eq(user.id)
         expect(decoded_token).to have_key('exp')
         expect(decoded_token['exp']).to be_an(Integer)
         expect(decoded_token['exp'] > 1589396000).to be(true)
