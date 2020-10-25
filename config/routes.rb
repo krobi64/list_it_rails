@@ -1,3 +1,14 @@
 Rails.application.routes.draw do
-  # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
+  defaults format: :json do
+    resources :lists do
+      member do
+        post '/share/:user_id', to: 'lists#share'
+      end
+      resources :items
+    end
+
+    post 'authenticate', to: 'authentication#authenticate'
+
+    match '*unmatched', to: 'application#route_not_found', via: :all
+  end
 end
