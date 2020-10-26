@@ -1,0 +1,8 @@
+
+config/master.key
+*.sqlite3
+Gemfile.lock
+*.log
+/tmp
+spec/examples.txt
+/.bundle
