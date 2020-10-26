@@ -1,8 +1,24 @@
 
-config/master.key
-*.sqlite3
-Gemfile.lock
-*.log
-/tmp
-spec/examples.txt
+# Ignore bundler config.
 /.bundle
+Gemfile.lock
+
+# Ignore the default SQLite database.
+/db/*.sqlite3
+/db/*.sqlite3-journal
+/db/*.sqlite3-*
+
+# Ignore all logfiles and tempfiles.
+/log/*
+/tmp/*
+!/log/.keep
+!/tmp/.keep
+
+.byebug_history
+
+# Ignore master key for decrypting credentials and more.
+/config/master.key
+
+# Ignore rspec log files and command line options
+spec/examples.txt
+.rspec
