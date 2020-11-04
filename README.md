@@ -1,5 +1,5 @@
-# shopping_list_ruby
-A shared shopping list for my family.
+# ListIt: Rails
+A shared list app for my family.
 
 This README would normally document whatever steps are necessary to get the
 application up and running.
