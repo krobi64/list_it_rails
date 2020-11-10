@@ -4,9 +4,9 @@ require 'json_web_token'
 RSpec.describe 'Authenticate', type: :request do
 
   describe "POST /authenticate" do
-    context 'with proper credentials' do
-      subject { JSON.parse response.body }
+    subject { JSON.parse response.body }
 
+    context 'with proper credentials' do
       before do
         user = create :user
         post authenticate_path, params: {email: user.email, password: 'This_Is_A_Basic_P4ssword'}
@@ -18,8 +18,8 @@ RSpec.describe 'Authenticate', type: :request do
 
       it 'returns a valid jwt' do
         expect(subject).to be_a(Hash)
-        expect(subject).to have_key('auth_token')
-        decoded_token = JsonWebToken.decode(subject['auth_token'])
+        expect(subject['status']).to eq('success')
+        decoded_token = JsonWebToken.decode(subject['payload'])
         user = User.first
         expect(decoded_token['id']).to eq(user.id)
         expect(decoded_token).to have_key('exp')
@@ -35,8 +35,9 @@ RSpec.describe 'Authenticate', type: :request do
 
       it 'responds with 401' do
         expect(response).to have_http_status(:unauthorized)
-        expect(JSON.parse(response.body)['error']).to have_key('user_authentication')
-        expect(JSON.parse(response.body)['error']['user_authentication']).to eq('invalid credentials')
+        expect(subject['status']).to eq('error')
+        expect(subject['payload']).to have_key('user_authentication')
+        expect(subject['payload']['user_authentication']).to eq('invalid credentials')
       end
     end
 
@@ -48,8 +49,9 @@ RSpec.describe 'Authenticate', type: :request do
 
       it 'responds with a 401' do
         expect(response).to have_http_status(:unauthorized)
-        expect(JSON.parse(response.body)['error']).to have_key('user_authentication')
-        expect(JSON.parse(response.body)['error']['user_authentication']).to eq('invalid credentials')
+        expect(subject['status']).to eq('error')
+        expect(subject['payload']).to have_key('user_authentication')
+        expect(subject['payload']['user_authentication']).to eq('invalid credentials')
       end
 
     end
