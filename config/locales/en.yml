@@ -36,3 +36,8 @@ en:
       models:
         authenticate_user:
           failure: Wrong email or password
+
+        create_account:
+          attributes:
+            base:
+              failure: Failure creating account

@@ -1,25 +1,64 @@
 # ListIt: Rails
-A shared list app for my family.
+A shared list API
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+[//]: # (* Ruby version:) 
 
-Things you may want to cover:
+[//]: # (* System dependencies)
 
-* Ruby version
+[//]: # (* Configuration)
 
-* System dependencies
+[//]: # (* Database creation)
 
-* Configuration
+[//]: # (* Database initialization)
 
-* Database creation
+[//]: # (* How to run the test suite)
 
-* Database initialization
+[//]: # (* Services - job queues, cache servers, search engines, etc.)
 
-* How to run the test suite
+[//]: # (* Deployment instructions)
 
-* Services (job queues, cache servers, search engines, etc.)
+## API
+All calls require a valid JWT **except**:
+* POST /accounts
+* POST /authenticate
 
-* Deployment instructions
+The JWT token MUST be sent in the AUTHORIZATION header of the request.
 
-* ...
+All calls return the appropriate http status and a JSON body that contains the following:
+* status: success | error
+* payload: specific returned value | error list
+
+### Create Account
+POST /accounts
+#### body
+
+* email[required]: a valid email address
+* password[required]: a password that meets the following criteria:
+    * at least 8 characters long
+    * contains at least 1 upper case character
+    * contains at least 1 lower case character
+    * contains at least 1 numeric character
+    * contains at least 1 special character
+* first_name[optional]
+* last_name[optional]
+### results
+
+#### success
+* status 201
+```
+{
+   'status': 'success',
+   'payload': <JWT token>
+} 
+```
+#### error
+* status 422
+```
+{
+    'status': 'error',
+    'payload': {
+        'base': <Main error>,
+        <email|password>: <field-specific error>
+    }
+}
+```

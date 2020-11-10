@@ -7,6 +7,8 @@ Rails.application.routes.draw do
       resources :items
     end
 
+    resources :accounts
+
     post 'authenticate', to: 'authentication#authenticate'
 
     match '*unmatched', to: 'application#route_not_found', via: :all
