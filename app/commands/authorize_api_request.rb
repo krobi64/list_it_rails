@@ -14,12 +14,14 @@ class AuthorizeApiRequest
   attr_reader :headers
 
   def user
-    @user ||= User.select(:id, :first_name, :last_name, :email).where(id: decoded_auth_token[:id]).first if decoded_auth_token
-    @user || errors.add(:token, 'Invalid token') && nil
+    return unless decoded_auth_token
+    @user ||= User.select(:id, :first_name, :last_name, :email).where(id: decoded_auth_token[:id]).first
   end
 
   def decoded_auth_token
+    return unless http_auth_header
     @decoded_auth_token ||= JsonWebToken.decode(http_auth_header)
+    @decoded_auth_token || errors.add(:token, 'Invalid token')
   end
 
   def http_auth_header
