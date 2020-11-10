@@ -24,17 +24,17 @@ All calls require a valid JWT **except**:
 
 The JWT token MUST be sent in the AUTHORIZATION header of the request.
 ```
-headers['AUTHORIZATION'] = 'token <JWT token value>'
+headers["AUTHORIZATION"] = "token <JWT token value>"
 ```
 
 ```
-headers['AUTHORIZATION] = 'token <JWT>'
+headers["AUTHORIZATION] = "token <JWT>"
 ```
 If the token is invalid or missing, the system will return a 401 status with the following body:
 ```json
 {
-    'status': 'error',
-    'payload': 'Missing token | Invalid token'
+    "status": "error",
+    "payload": "Missing token | Invalid token"
 }
 ```
 
@@ -49,11 +49,11 @@ POST /accounts
 #### body
 ```json
 {
-    'email': 'a valid email address',
-    'password': 'a valid password',
-    'passord_confirmation': 'a valid confirmation',
-    'first_name': 'an optional first name',
-    'last_name': 'an optional last_name'
+    "email": "a valid email address",
+    "password": "a valid password",
+    "passord_confirmation": "a valid confirmation",
+    "first_name": "an optional first name",
+    "last_name": "an optional last_name"
 }
 ```
 * email (**required**): a valid email address
@@ -72,18 +72,18 @@ POST /accounts
 * status 201
 ```json
 {
-   'status': 'success',
-   'payload': <JWT token>
+   "status": "success",
+   "payload": "<JWT token>"
 } 
 ```
 ##### error
 * status 422
 ```json
 {
-    'status': 'error',
-    'payload': {
-        'base': <Main error>,
-        <email|password>: <field-specific error>
+    "status": "error",
+    "payload": {
+        "base": "<Main error>",
+        "<email|password>": "<field-specific error>"
     }
 }
 ```
@@ -95,8 +95,8 @@ POST /authenticate
 #### body
 ```json
 {
-    'email': <User email>,
-    'password': <User password>
+    "email": "<User email>",
+    "password": "<User password>"
 }
 ```
 
@@ -105,17 +105,17 @@ POST /authenticate
 * status: 200
 ```json
 {
-   'status': 'success',
-   'payload': <JWT token>
+   "status": "success",
+   "payload": "<JWT token>"
 } 
 ```
 ##### error
 * status: 401
 ```json
 {
-    'status': 'error',
-    'payload': {
-        'user_authentication': 'invalid credentials'
+    "status": "error",
+    "payload": {
+        "user_authentication": "invalid credentials"
     }
 }
 ```

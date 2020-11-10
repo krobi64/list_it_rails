@@ -34,7 +34,7 @@ en:
     errors:
       models:
         authenticate_user:
-          failure: Invalid email and/or passsword
+          failure: Invalid credentials
 
         create_account:
           attributes:
