@@ -33,7 +33,7 @@ POST /accounts
 #### body
 
 * email[required]: a valid email address
-* password[:required]: a password that meets the following criteria:
+* password[required]: a password that meets the following criteria:
     * at least 8 characters long
     * contains at least 1 upper case character
     * contains at least 1 lower case character
