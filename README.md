@@ -89,7 +89,7 @@ POST /authenticate
 }
 ```
 
-#### response
+#### responses
 ##### success
 * status: 200
 ```
@@ -98,7 +98,7 @@ POST /authenticate
    'payload': <JWT token>
 } 
 ```
-#####error
+##### error
 * status: 401
 ```
 {
