@@ -118,3 +118,35 @@ POST /authenticate
     }
 }
 ```
+
+### AUTHENTICATE USER
+```
+POST /authenticate
+```
+#### body
+```
+{
+    'email': <User email>,
+    'password': <User password>
+}
+```
+
+#### responses
+##### success
+* status: 200
+```
+{
+   'status': 'success',
+   'payload': <JWT token>
+} 
+```
+##### error
+* status: 401
+```
+{
+    'status': 'error',
+    'payload': {
+        'user_authentication': 'invalid credentials'
+    }
+}
+```
