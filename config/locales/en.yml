@@ -30,12 +30,11 @@
 # available at https://guides.rubyonrails.org/i18n.html.
 
 en:
-  hello: "Hello world"
   activemodel:
     errors:
       models:
         authenticate_user:
-          failure: Wrong email or password
+          failure: Invalid email and/or passsword
 
         create_account:
           attributes:

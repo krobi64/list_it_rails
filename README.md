@@ -27,6 +27,17 @@ The JWT token MUST be sent in the AUTHORIZATION header of the request.
 headers['AUTHORIZATION'] = 'token <JWT token value>'
 ```
 
+```
+headers['AUTHORIZATION] = 'token <JWT>'
+```
+If the token is invalid or missing, the system will return a 401 status with the following body:
+```json
+{
+    'status': 'error',
+    'payload': 'Missing token | Invalid token'
+}
+```
+
 All calls return the appropriate http status and a JSON body that contains the following:
 * status: success | error
 * payload: specific returned value | error list
@@ -36,11 +47,11 @@ All calls return the appropriate http status and a JSON body that contains the f
 POST /accounts
 ```
 #### body
-```
+```json
 {
     'email': 'a valid email address',
     'password': 'a valid password',
-    'passord_confirmation: 'a valid confirmation',
+    'passord_confirmation': 'a valid confirmation',
     'first_name': 'an optional first name',
     'last_name': 'an optional last_name'
 }
@@ -59,7 +70,7 @@ POST /accounts
 
 ##### success
 * status 201
-```
+```json
 {
    'status': 'success',
    'payload': <JWT token>
@@ -67,7 +78,7 @@ POST /accounts
 ```
 ##### error
 * status 422
-```
+```json
 {
     'status': 'error',
     'payload': {
@@ -82,7 +93,7 @@ POST /accounts
 POST /authenticate
 ```
 #### body
-```
+```json
 {
     'email': <User email>,
     'password': <User password>
@@ -92,7 +103,7 @@ POST /authenticate
 #### responses
 ##### success
 * status: 200
-```
+```json
 {
    'status': 'success',
    'payload': <JWT token>
@@ -100,7 +111,7 @@ POST /authenticate
 ```
 ##### error
 * status: 401
-```
+```json
 {
     'status': 'error',
     'payload': {
