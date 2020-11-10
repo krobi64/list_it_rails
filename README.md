@@ -27,14 +27,13 @@ The JWT token MUST be sent in the AUTHORIZATION header of the request.
 headers["AUTHORIZATION"] = "token <JWT token value>"
 ```
 
-```
-headers["AUTHORIZATION] = "token <JWT>"
-```
 If the token is invalid or missing, the system will return a 401 status with the following body:
 ```json
 {
     "status": "error",
-    "payload": "Missing token | Invalid token"
+    "payload": {
+      "token": "Missing token | Invalid token"
+    }
 }
 ```
 
