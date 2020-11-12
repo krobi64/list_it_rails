@@ -8,10 +8,11 @@ class ListsController < ApplicationController
   end
 
   def create
-    if @current_user.lists.create(attributes = list_params)
+    list = @current_user.lists.create(list_params)
+    if list.persisted?
       head :created
     else
-      render json: message(:error, @current_user.lists.errors)
+      render json: message(:error, list.errors), status: :conflict
     end
   end
 

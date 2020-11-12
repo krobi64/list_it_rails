@@ -87,7 +87,7 @@ POST /accounts
 }
 ```
 
-### AUTHENTICATE USER
+### Authenticate user
 ```
 POST /authenticate
 ```
@@ -118,35 +118,30 @@ POST /authenticate
     }
 }
 ```
-
-### AUTHENTICATE USER
+## Lists
+### Create List
 ```
-POST /authenticate
+POST /lists
 ```
 #### body
-```
+```json
 {
-    'email': <User email>,
-    'password': <User password>
+  "name": "List name"
 }
 ```
 
 #### responses
 ##### success
-* status: 200
-```
-{
-   'status': 'success',
-   'payload': <JWT token>
-} 
-```
+* Status: 201
+* No body
+
 ##### error
-* status: 401
-```
+* Status 422
+```json
 {
-    'status': 'error',
-    'payload': {
-        'user_authentication': 'invalid credentials'
-    }
+  "status": "error",
+  "payload": {
+      "name": ["can't be blank"]
+  }
 }
 ```
