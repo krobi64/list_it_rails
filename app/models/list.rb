@@ -4,4 +4,6 @@ class List < ApplicationRecord
   has_many :items
 
   validates :name, presence: true
+
+  default_scope { select(:id, :name, :user_id) }
 end

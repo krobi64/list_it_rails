@@ -2,7 +2,8 @@ class User < ApplicationRecord
 
   has_secure_password
 
-  has_and_belongs_to_many :lists
+  has_many :lists
+  has_and_belongs_to_many :shared_lists, class_name: 'List', association_foreign_key: :list_id
 
   # Reference https://medium.com/@Timothy_Fell/how-to-set-password-requirements-in-rails-d9081926923b
   PASSWORD_REQUIREMENTS = /\A
@@ -24,6 +25,10 @@ class User < ApplicationRecord
                 with: PASSWORD_REQUIREMENTS,
                 message: 'is missing one or more requirements.'
             }
+
+  def all_lists
+    lists + shared_lists
+  end
 
   private
 

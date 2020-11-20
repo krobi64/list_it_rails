@@ -120,6 +120,7 @@ POST /authenticate
 ```
 ## Lists
 ### Create List
+Creates a list owned by the current user.
 ```
 POST /lists
 ```
@@ -145,3 +146,35 @@ POST /lists
   }
 }
 ```
+
+### Get Lists
+Retrieves all lists owned by or shared with the current user. May return an empty list.
+```
+GET /lists
+```
+
+#### responses
+##### success
+* Status: 200
+```json
+[
+      {
+          "id": 1,
+          "name": "List 1",
+          "user": {
+              "id": 1
+          }
+      },
+      {
+          "id": 23,
+          "name": "List 2",
+          "user": {
+              "id": 3
+          }
+      } 
+]
+```
+
+##### error
+* Status 422
+

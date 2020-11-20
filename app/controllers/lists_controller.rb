@@ -4,7 +4,7 @@ class ListsController < ApplicationController
   before_action :current_list, only: [:show, :update, :delete, :share]
 
   def index
-    render json: {status: :success, payload: @current_user.lists.select(:id, :name).all}
+    render json: message(:success, @current_user.all_lists)
   end
 
   def create
