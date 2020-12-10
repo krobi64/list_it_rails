@@ -12,22 +12,11 @@ RSpec.describe "Lists", type: :request do
   }
   let(:response_body) { JSON.parse response.body }
 
-  context 'without a JWT' do
-    it 'returns a 401' do
+  context 'without a valid JWT' do
+    before do
       get '/lists'
-      expect(response).to have_http_status(:unauthorized)
-      expect(response_body['status']).to eq('error')
-      expect(response_body['payload']['token']).to eq('Missing token')
     end
-  end
-
-  context 'with an Invalid JWT' do
-    it 'returns a 401' do
-      headers = {'AUTHORIZATION': 'token 1234'}
-      get '/lists/index', headers: headers
-      expect(response_body['status']).to eq('error')
-      expect(response_body['payload']['token']).to eq('Invalid token')
-    end
+    it_behaves_like 'a request that fails without a valid JWT'
   end
 
   describe 'POST /lists' do
@@ -87,6 +76,38 @@ RSpec.describe "Lists", type: :request do
     end
   end
 
+  describe 'GET /lists/:id' do
+    before do
+      @user = create(:user_with_lists)
+      token = JsonWebToken.encode(id: @user.id)
+      @header = { AUTHORIZATION: "token #{token}"}
+    end
+
+    context 'with an existing list' do
+      before do
+        @list_id = @user.lists.first.id
+        get "/lists/#{@list_id}", headers: @header
+      end
+
+      it_behaves_like 'a successful request'
+
+      it 'returns the list object' do
+        expect(response_body['payload']['id']).to eq(@list_id)
+      end
+    end
+
+    context 'with a non-existing list id' do
+      before do
+        get '/lists/999', headers: @header
+      end
+
+      it_behaves_like 'an invalid request'
+
+      it 'returns a not found message' do
+        expect(response_body['payload']).to eq('List not found')
+      end
+    end
+  end
 
   # describe "GET /update" do
   #   it "returns http success" do

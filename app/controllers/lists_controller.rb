@@ -17,11 +17,7 @@ class ListsController < ApplicationController
   end
 
   def show
-    if current_list
-      render json: message(:success, current_list)
-    else
-      render json: message(:error, 'Not found') unless current_list
-    end
+    render json: message(:success, current_list)
   end
 
   def update
@@ -47,7 +43,11 @@ class ListsController < ApplicationController
   private
 
   def current_list
-    @current_user.lists.find(params[:id])
+    begin
+      @current_user.lists.find(params[:id])
+    rescue ActiveRecord::RecordNotFound
+      render json: message(:error, I18n.t('activerecord.models.list.errors.not_found')), status: :not_found
+    end
   end
 
   def list_params

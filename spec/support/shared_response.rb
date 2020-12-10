@@ -19,6 +19,27 @@ RSpec.shared_examples 'a successful request' do
   end
 end
 
+RSpec.shared_examples 'an invalid request' do
+  let(:respone_body) { JSON.parse response.body }
+
+  it 'returns an error status' do
+    expect(response.status).to be_between(400,422)
+  end
+
+  it 'returns a body with :status and :payload' do
+    expect(response_body).to have_key('status')
+    expect(response_body).to have_key('payload')
+  end
+
+  it 'returns an error status' do
+    expect(response_body['status']).to eq('error')
+  end
+
+  it 'includes an error body' do
+    expect(response_body['payload']).to_not be_empty
+  end
+end
+
 RSpec.shared_examples 'a request that fails without a valid JWT' do
   let(:response_body) { JSON.parse response.body }
 

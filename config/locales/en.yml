@@ -40,3 +40,9 @@ en:
           attributes:
             base:
               failure: Failure creating account
+  activerecord:
+    models:
+      list:
+        errors:
+            not_found: List not found
+
