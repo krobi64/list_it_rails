@@ -91,6 +91,10 @@ RSpec.describe "Lists", type: :request do
 
       it_behaves_like 'a successful request'
 
+      it 'returns a success status' do
+        expect(response).to have_http_status(:ok)
+      end
+
       it 'returns the list object' do
         expect(response_body['payload']['id']).to eq(@list_id)
       end
@@ -103,6 +107,9 @@ RSpec.describe "Lists", type: :request do
 
       it_behaves_like 'an invalid request'
 
+      it 'returns a :not_found status' do
+        expect(response).to have_http_status(:not_found)
+      end
       it 'returns a not found message' do
         expect(response_body['payload']).to eq('List not found')
       end
