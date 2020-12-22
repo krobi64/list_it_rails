@@ -4,7 +4,7 @@ class ApplicationController < ActionController::API
   attr_reader :current_user
 
   def route_not_found
-    render json: message(:error, 'Not found' ), status: :not_found
+    render json: message(:error, t('routes.errors.not_found') ), status: :not_found
   end
 
 

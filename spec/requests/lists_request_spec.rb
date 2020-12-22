@@ -28,6 +28,9 @@ RSpec.describe "Lists", type: :request do
       let(:body) { {list: {name: 'A list'}} }
 
       it_behaves_like 'a successful request without a body'
+      it 'returns a success status' do
+        expect(response).to have_http_status(:created)
+      end
     end
 
     context 'without a list name' do
@@ -116,20 +119,75 @@ RSpec.describe "Lists", type: :request do
     end
   end
 
-  # describe "GET /update" do
-  #   it "returns http success" do
-  #     get "/lists/update"
-  #     expect(response).to have_http_status(:success)
-  #   end
-  # end
-  #
-  # describe "GET /delete" do
-  #   it "returns http success" do
-  #     get "/lists/delete"
-  #     expect(response).to have_http_status(:success)
-  #   end
-  # end
-  #
+  describe "PUT /lists/:id" do
+    let(:list_params) { {list: {name: 'altered list name'}} }
+
+    before do
+      @user = create(:user_with_lists)
+      token = JsonWebToken.encode(id: @user.id)
+      @header = { AUTHORIZATION: "token #{token}"}
+    end
+
+    context 'with an invalid list id' do
+      before do
+        put '/lists/999', params: list_params, headers: @header
+      end
+
+      it_behaves_like 'an invalid request'
+
+      it 'returns a :not_found status' do
+        expect(response).to have_http_status(:not_found)
+      end
+
+      it 'returns a not found message' do
+        expect(response_body['payload']).to eq('List not found')
+      end
+    end
+
+    context 'with an invalid payload' do
+      before do
+        @list_id = @user.lists.first.id
+        put "/lists/#{@list_id}", params: {list_name: 'wrong param name'}, headers: @header
+      end
+
+      it_behaves_like 'an invalid request'
+
+      it 'returns a :conflict status' do
+        expect(response).to have_http_status(:conflict)
+      end
+    end
+
+    context 'with a valid payload' do
+      before do
+        @list_id = @user.lists.first.id
+        put "/lists/#{@list_id}", params: list_params, headers: @header
+      end
+
+      it_behaves_like 'a successful request without a body'
+    end
+  end
+
+  describe "GET /delete" do
+    before do
+      @user = create(:user_with_lists)
+      token = JsonWebToken.encode(id: @user.id)
+      @header = { AUTHORIZATION: "token #{token}"}
+    end
+
+    context 'with an invalid id' do
+      before do
+        @list_id = @user.lists.first.id
+        delete "/lists/999", headers: @header
+      end
+
+      it_behaves_like 'an invalid request'
+
+      it 'returns a :not_found status' do
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+  end
+
   # describe "GET /share" do
   #   it "returns http success" do
   #     get "/lists/share"

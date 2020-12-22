@@ -22,7 +22,7 @@ end
 RSpec.shared_examples 'an invalid request' do
   let(:respone_body) { JSON.parse response.body }
 
-  it 'returns an error status' do
+  it 'returns an http error status' do
     expect(response.status).to be_between(400,422)
   end
 

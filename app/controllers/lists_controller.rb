@@ -1,7 +1,9 @@
 class ListsController < ApplicationController
 
-
   before_action :current_list, only: [:show, :update, :delete, :share]
+
+  rescue_from ActiveRecord::RecordNotFound, with: :not_found
+  rescue_from ActionController::ParameterMissing, with: :missing_parameter
 
   def index
     render json: message(:success, @current_user.all_lists)
@@ -43,14 +45,18 @@ class ListsController < ApplicationController
   private
 
   def current_list
-    begin
-      @current_user.lists.find(params[:id])
-    rescue ActiveRecord::RecordNotFound
-      render json: message(:error, I18n.t('activerecord.models.list.errors.not_found')), status: :not_found
-    end
+    @current_list ||= current_user.lists.find(params[:id])
   end
 
   def list_params
     params.require(:list).permit(:name)
+  end
+
+  def not_found
+    render json: message(:error, I18n.t('activerecord.models.list.errors.not_found')), status: :not_found
+  end
+
+  def missing_parameter
+    render json: message(:error, I18n.t('actioncontroller.errors.list.invalid_parameters')), status: :conflict
   end
 end

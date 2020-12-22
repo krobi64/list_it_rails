@@ -45,4 +45,11 @@ en:
       list:
         errors:
             not_found: List not found
+  routes:
+    errors:
+      not_found: Not Found
+  actioncontroller:
+    errors:
+      list:
+        invalid_parameters: Invalid Payload, refer to the api documentation
 
