@@ -24,9 +24,9 @@ class ListsController < ApplicationController
 
   def update
     if current_list.update(list_params)
-      render json: {status: :success}
+      head(:no_content)
     else
-      render json: {status: error, payload: current_list.errors}
+      render json: message(:error, current_list.errors), status: :conflict
     end
   end
 
