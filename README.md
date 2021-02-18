@@ -23,7 +23,7 @@ All calls require a valid JWT **except**:
 * POST /authenticate
 
 The JWT token MUST be sent in the AUTHORIZATION header of the request.
-```
+```http request
 headers["AUTHORIZATION"] = "token <JWT token value>"
 ```
 
@@ -42,7 +42,7 @@ All calls return the appropriate http status and a JSON body that contains the f
 * payload: specific returned value | error list
 
 ### Create Account
-```
+```http request
 POST /accounts
 ```
 #### body
@@ -88,7 +88,7 @@ POST /accounts
 ```
 
 ### Authenticate user
-```
+```http request
 POST /authenticate
 ```
 #### body
@@ -121,7 +121,7 @@ POST /authenticate
 ## Lists
 ### Create List
 Creates a list owned by the current user.
-```
+```http request
 POST /lists
 ```
 #### body
@@ -148,8 +148,8 @@ POST /lists
 ```
 
 ### Get Lists
-Retrieves all lists owned by or shared with the current user. May return an empty list.
-```
+Retrieves all lists owned by or shared with the current user. Will return an empty array if no lists meet this criteria .
+```http request
 GET /lists
 ```
 
@@ -157,24 +157,61 @@ GET /lists
 ##### success
 * Status: 200
 ```json
-[
-      {
-          "id": 1,
-          "name": "List 1",
-          "user": {
-              "id": 1
-          }
-      },
-      {
-          "id": 23,
-          "name": "List 2",
-          "user": {
-              "id": 3
-          }
-      } 
-]
+{
+  status: "success",
+  payload: [
+    {
+      "id": 1,
+      "name": "List 1",
+      "user": {
+        "id": 1
+      }
+    },
+    {
+      "id": 23,
+      "name": "List 2",
+      "user": {
+        "id": 3
+      }
+    }
+  ]
+}
 ```
 
 ##### error
 * Status 422
 
+### Retrieve a Specific List
+Returns a single list either owned by or shared with the current user.
+```http request
+GET /lists/:list_id
+```
+####responses
+#####success
+* Status: 200
+```json
+  {
+    "status": "success",
+    "payload": {
+      "id": 1,
+      "name": "List 1",
+      "user": {
+        "id": 1
+      }
+    }
+  }
+```
+#####error
+* Status: 404
+```json
+  {
+    "status": "error",
+    "payload": "List "
+      
+}
+```
+### Edit List
+Modify the name of an existing list owned by the current user.
+```
+PUT /lists/:list_id
+```

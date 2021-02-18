@@ -41,7 +41,7 @@ class ListsController < ApplicationController
       user.lists << current_list
       head :no_content
     else
-      render json: {status: :error, payload: 'User not found'}, status: :not_found unless user
+      render json: {status: :error, payload: I18n.t('activerecord.models.user.errors.not_found')}, status: :not_found unless user
     end
   end
 

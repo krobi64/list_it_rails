@@ -45,6 +45,9 @@ en:
       list:
         errors:
             not_found: List not found
+      user:
+        errors:
+            not_found: User not found
   routes:
     errors:
       not_found: Not Found

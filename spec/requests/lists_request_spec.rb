@@ -1,6 +1,10 @@
 require 'rails_helper'
 require_relative '../support/shared_response'
 
+LIST_NOT_FOUND = I18n.t('activerecord.models.list.errors.not_found')
+USER_NOT_FOUND = I18n.t('activerecord.models.user.errors.not_found')
+INVALID_PARAMETER = I18n.t('actioncontroller.errors.list.invalid_parameters')
+
 RSpec.describe "Lists", type: :request do
 
   let(:user) { create :user }
@@ -113,8 +117,9 @@ RSpec.describe "Lists", type: :request do
       it 'returns a :not_found status' do
         expect(response).to have_http_status(:not_found)
       end
+
       it 'returns a not found message' do
-        expect(response_body['payload']).to eq('List not found')
+        expect(response_body['payload']).to eq(LIST_NOT_FOUND)
       end
     end
   end
@@ -140,7 +145,7 @@ RSpec.describe "Lists", type: :request do
       end
 
       it 'returns a not found message' do
-        expect(response_body['payload']).to eq('List not found')
+        expect(response_body['payload']).to eq(LIST_NOT_FOUND)
       end
     end
 
@@ -154,6 +159,10 @@ RSpec.describe "Lists", type: :request do
 
       it 'returns a :conflict status' do
         expect(response).to have_http_status(:conflict)
+      end
+
+      it "returns a payload with #{INVALID_PARAMETER}" do
+        expect(response_body['payload']).to eq(INVALID_PARAMETER)
       end
     end
 
@@ -169,7 +178,7 @@ RSpec.describe "Lists", type: :request do
     end
   end
 
-  describe "GET /delete" do
+  describe "DELETE /lists/:list_id" do
     before do
       @user = create(:user_with_lists)
       token = JsonWebToken.encode(id: @user.id)
@@ -185,6 +194,10 @@ RSpec.describe "Lists", type: :request do
 
       it 'returns a :not_found status' do
         expect(response).to have_http_status(:not_found)
+      end
+
+      it 'returns a List not found payload' do
+        expect(response_body['payload']).to eq(LIST_NOT_FOUND)
       end
     end
 
@@ -237,7 +250,7 @@ RSpec.describe "Lists", type: :request do
         @list = @owner.lists.first
         token = JsonWebToken.encode(id: @owner.id)
         @header = { AUTHORIZATION: "token #{token}" }
-        post "/lists/#{@list.id}/share", params: {email: @user_email}, headers: @header
+        post "/lists/#{@list.id}/share", params: {email: @new_email}, headers: @header
       end
 
       it 'returns a :not_found status' do
