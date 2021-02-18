@@ -163,7 +163,9 @@ RSpec.describe "Lists", type: :request do
         put "/lists/#{@list_id}", params: list_params, headers: @header
       end
 
-      it_behaves_like 'a successful request without a body'
+      it 'returns a :no_content http status' do
+        expect(response).to have_http_status (:no_content)
+      end
     end
   end
 
@@ -176,8 +178,7 @@ RSpec.describe "Lists", type: :request do
 
     context 'with an invalid id' do
       before do
-        @list_id = @user.lists.first.id
-        delete "/lists/999", headers: @header
+        delete '/lists/999', headers: @header
       end
 
       it_behaves_like 'an invalid request'
@@ -186,13 +187,62 @@ RSpec.describe "Lists", type: :request do
         expect(response).to have_http_status(:not_found)
       end
     end
+
+    context 'with a valid id' do
+      before do
+        @list_id = @user.lists.first.id
+        delete "/lists/#{@list_id}", headers: @header
+      end
+
+      it 'returns a :no_content http status' do
+        expect(response).to have_http_status (:no_content)
+      end
+
+      it 'deletes the list' do
+        get '/lists', headers: @header
+        actual = response_body['payload'].all? { |i| i['id'] != @list_id }
+        expect(actual).to eq(true)
+      end
+    end
   end
 
-  # describe "GET /share" do
-  #   it "returns http success" do
-  #     get "/lists/share"
-  #     expect(response).to have_http_status(:success)
-  #   end
-  # end
+  describe "POST /share" do
+    context 'with an existing user' do
+      before do
+        @owner = create(:user_with_lists)
+        @list = @owner.lists.first
+        @user = create(:user)
+        token = JsonWebToken.encode(id: @owner.id)
+        @header = { AUTHORIZATION: "token #{token}" }
+        post "/lists/#{@list.id}/share", params: {email: @user.email}, headers: @header
+      end
 
+      it 'returns a :no_content http status' do
+        expect(response).to have_http_status (:no_content)
+      end
+
+      it 'adds the list to the second user' do
+        token = JsonWebToken.encode(id: @user.id)
+        header = { AUTHORIZATION: "token #{token}" }
+        get '/lists', headers: header
+        actual = response_body['payload'].any? { |list| list['id'] == @list.id }
+        expect(actual).to eq(true)
+      end
+    end
+
+    context 'without an existing user account' do
+      before do
+        @new_email = 'non_existing@example.com'
+        @owner = create(:user_with_lists)
+        @list = @owner.lists.first
+        token = JsonWebToken.encode(id: @owner.id)
+        @header = { AUTHORIZATION: "token #{token}" }
+        post "/lists/#{@list.id}/share", params: {email: @user_email}, headers: @header
+      end
+
+      it 'returns a :not_found status' do
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+  end
 end

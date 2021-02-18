@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   defaults format: :json do
     resources :lists do
       member do
-        post '/share/:user_id', to: 'lists#share'
+        post '/share', to: 'lists#share'
       end
       resources :items
     end

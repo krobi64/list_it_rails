@@ -36,10 +36,13 @@ class ListsController < ApplicationController
   end
 
   def share
-    user = User.find(params[:user_id])
-    render json: {status: :error, payload: 'User not found'}, status: :not_found unless user
-    user.lists << current_list
-    head :no_content
+    user = User.where(email: params[:email]).first
+    if user
+      user.lists << current_list
+      head :no_content
+    else
+      render json: {status: :error, payload: 'User not found'}, status: :not_found unless user
+    end
   end
 
   private
