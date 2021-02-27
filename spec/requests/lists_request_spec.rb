@@ -227,7 +227,7 @@ RSpec.describe "Lists", type: :request do
         @user = create(:user)
         token = JsonWebToken.encode(id: @owner.id)
         @header = { AUTHORIZATION: "token #{token}" }
-        post "/lists/#{@list.id}/share", params: {email: @user.email}, headers: @header
+        put "/lists/#{@list.id}/share", params: {email: @user.email}, headers: @header
       end
 
       it 'returns a :no_content http status' do
@@ -250,7 +250,7 @@ RSpec.describe "Lists", type: :request do
         @list = @owner.lists.first
         token = JsonWebToken.encode(id: @owner.id)
         @header = { AUTHORIZATION: "token #{token}" }
-        post "/lists/#{@list.id}/share", params: {email: @new_email}, headers: @header
+        put "/lists/#{@list.id}/share", params: {email: @new_email}, headers: @header
       end
 
       it 'returns a :not_found status' do
