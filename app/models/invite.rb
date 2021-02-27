@@ -4,6 +4,11 @@ class Invite < ApplicationRecord
   belongs_to :sender, class_name: 'User'
   belongs_to :recipient, class_name: 'User'
 
+  validates_with EmailValidator
+  validates :email,
+            uniqueness: { case_sensitive: false, message: I18n.t('activerecord.models.invite.errors.email_in_use') }
+
+
   private
     def generate_token
       self.token = SecureRandom.hex(16)

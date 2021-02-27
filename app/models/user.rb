@@ -16,7 +16,7 @@ class User < ApplicationRecord
     (?=.*[[:^alnum:]])
   /x
 
-  validate :email_value
+  validates_with EmailValidator
 
   validates :email,
             uniqueness: { case_sensitive: false, message: 'Email already in use' }
@@ -31,11 +31,4 @@ class User < ApplicationRecord
   def all_lists
     lists + shared_lists
   end
-
-  private
-
-    def email_value
-      errors.add(:email, 'Invalid email address') unless Truemail.valid?(email, with: :regex)
-    end
-
 end
