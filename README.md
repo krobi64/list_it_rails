@@ -76,7 +76,7 @@ POST /accounts
 } 
 ```
 ##### error
-* status 422
+* status 400
 ```json
 {
     "status": "error",
@@ -137,7 +137,7 @@ POST /lists
 * No body
 
 ##### error
-* Status 422
+* Status 400
 ```json
 {
   "status": "error",
@@ -158,8 +158,8 @@ GET /lists
 * Status: 200
 ```json
 {
-  status: "success",
-  payload: [
+  "status": "success",
+  "payload": [
     {
       "id": 1,
       "name": "List 1",
@@ -179,39 +179,161 @@ GET /lists
 ```
 
 ##### error
-* Status 422
+* Status: 401
+```json
+{
+  "status": "error",
+  "payload": "Unauthorized Access"
+}
+```
 
 ### Retrieve a Specific List
 Returns a single list either owned by or shared with the current user.
 ```http request
 GET /lists/:list_id
 ```
-####responses
-#####success
+#### responses
+##### success
 * Status: 200
 ```json
-  {
-    "status": "success",
-    "payload": {
-      "id": 1,
-      "name": "List 1",
-      "user": {
-        "id": 1
-      }
+{
+  "status": "success",
+  "payload": {
+    "id": 1,
+    "name": "List 1",
+    "user": {
+      "id": 1
     }
   }
+}
 ```
-#####error
+##### error
 * Status: 404
 ```json
-  {
-    "status": "error",
-    "payload": "List "
-      
+{
+  "status": "error",
+  "payload": "List not found"
+    
 }
 ```
 ### Edit List
 Modify the name of an existing list owned by the current user.
-```
+```http request
 PUT /lists/:list_id
 ```
+#### body
+```json
+{
+  "name": "New list name"
+}
+```
+#### responses
+##### success
+* Status: 204
+* No body
+
+##### errors
+* Status: 400
+```json
+{
+  "status": "error",
+  "payload": "Invalid Payload, refer to the api documentation"
+}
+```
+or
+* Status: 401
+```json
+{
+  "status": "error",
+  "payload": "Unauthorized Access"
+}
+```
+or
+* Status: 404
+```json
+{
+  "status": "error",
+  "payload": "List not found"
+}
+```
+
+### Delete List
+Delete a list the current user owns.
+```http request
+DELETE /lists/:list_id
+```
+#### responses
+##### success
+* Status: 204
+* No body
+##### errors
+* Status: 401
+```json
+{
+  "status": "error",
+  "payload": "Unauthorized Access"
+}
+```
+or
+* Status: 404
+```json
+{
+  "status": "error",
+  "payload": "List not found"
+}
+```
+
+### Share List
+Share a list with another person. If the user is not a member, invite via email.
+```http request
+PUT /lists/:list_id
+```
+#### body
+
+```json
+{
+  "email": "valid email address"
+}
+```
+#### responses
+##### success
+* Status: 200
+```json
+{
+  "status": "success",
+  "payload": "User successfully added"
+}
+```
+or
+```json
+{
+  "status": "success",
+  "payload": "Invitation sent."
+}
+```
+##### errors
+* Status: 400
+```json
+{
+  "status": "error",
+  "payload": "Invalid email address"
+}
+or
+```
+* Status: 401
+```json
+{
+  "status": "error",
+  "payload": "Unauthorized Access"
+}
+```
+or
+* Status: 404
+```json
+{
+  "status": "error",
+  "payload": "List not found"
+}
+```
+
+
