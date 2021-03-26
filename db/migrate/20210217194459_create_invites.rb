@@ -4,7 +4,7 @@ class CreateInvites < ActiveRecord::Migration[6.1]
       t.string :email
       t.integer :list_id
       t.integer :sender_id
-      t.integer :recipient_id
+      t.integer :recipient_id, null: true
       t.string :token
       t.timestamps
     end

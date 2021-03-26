@@ -37,8 +37,9 @@ class ListsController < ApplicationController
 
   def share
     user = User.where(email: params[:email]).first
-    if user
-      user.lists << current_list
+    invite = SendInvite.new(params[:email], current_list, current_user, user).call
+    user.lists << current_list unless user.nil?
+    if invite.successful?
       head :no_content
     else
       render json: {status: :error, payload: I18n.t('activerecord.models.user.errors.not_found')}, status: :not_found unless user
