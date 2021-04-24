@@ -22,4 +22,8 @@ class ApplicationController < ActionController::API
       render json: message(:error, authorization.errors), status: :unauthorized
     end
   end
+    def missing_parameter
+      render json: message(:error, I18n.t("actioncontroller.errors.#{model_string}.invalid_parameters")), status: :bad_request
+    end
+
 end

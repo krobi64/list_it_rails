@@ -76,7 +76,7 @@ RSpec.describe "Accounts", type: :request do
       let(:email) { 'Joe@abc' }
       it 'returns a 422 status' do
         post '/accounts', params: { user: params }
-        expect(response).to have_http_status(:conflict)
+        expect(response).to have_http_status(:bad_request)
       end
 
       it 'returns a JSON package with an error status' do
@@ -97,7 +97,7 @@ RSpec.describe "Accounts", type: :request do
 
       it 'returns a 422 status' do
         post '/accounts', params: { user: params }
-        expect(response).to have_http_status(:conflict)
+        expect(response).to have_http_status(:bad_request)
       end
 
       it 'returns a JSON package with an error status' do

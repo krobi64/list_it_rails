@@ -10,7 +10,7 @@ class AccountsController < ApplicationController
     if command.success?
       render json: message(:success, command.result), status: :created
     else
-      render json: message(:error, command.errors), status: :conflict
+      render json: message(:error, command.errors), status: :bad_request
     end
   end
 

@@ -39,11 +39,17 @@ RSpec.describe "Lists", type: :request do
 
     context 'without a list name' do
       let(:body) { {list: { name: '' }} }
-
-      it 'returns a 422 with an error' do
+      before do
         post '/lists', params: body, headers: header
-        expect(response).to have_http_status(:conflict)
-        expect(response_body['status']).to eq('error')
+      end
+
+      it_behaves_like 'an invalid request'
+
+      it 'returns a status of :bad_request' do
+        expect(response).to have_http_status(:bad_request)
+      end
+
+      it "returns an error message \"can't be blank" do
         expect(response_body['payload']['name']).to eq(["can't be blank"])
       end
     end
@@ -72,7 +78,6 @@ RSpec.describe "Lists", type: :request do
       end
 
       it_behaves_like 'a successful request'
-
       it 'returns a payload with an array of two lists' do
         expect(response_body['payload'].size).to eq(2)
       end
@@ -158,7 +163,7 @@ RSpec.describe "Lists", type: :request do
       it_behaves_like 'an invalid request'
 
       it 'returns a :conflict status' do
-        expect(response).to have_http_status(:conflict)
+        expect(response).to have_http_status(:bad_request)
       end
 
       it "returns a payload with #{INVALID_PARAMETER}" do

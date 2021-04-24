@@ -1,20 +1,17 @@
 class ListsController < ApplicationController
 
-  before_action :current_list, only: [:show, :update, :delete, :share]
-
-  rescue_from ActiveRecord::RecordNotFound, with: :not_found
-  rescue_from ActionController::ParameterMissing, with: :missing_parameter
+  before_action :current_list, only: [ :update, :delete ]
 
   def index
     render json: message(:success, @current_user.all_lists)
   end
 
   def create
-    list = @current_user.lists.create(list_params)
+    list = @current_user.all_lists.create(list_params.merge(user: current_user))
     if list.persisted?
       head :created
     else
-      render json: message(:error, list.errors), status: :conflict
+      render json: message(:error, list.errors), status: :bad_request
     end
   end
 
@@ -26,7 +23,7 @@ class ListsController < ApplicationController
     if current_list.update(list_params)
       head(:no_content)
     else
-      render json: message(:error, current_list.errors), status: :conflict
+      render json: message(:error, current_list.errors), status: :bad_request
     end
   end
 
@@ -58,9 +55,5 @@ class ListsController < ApplicationController
 
   def not_found
     render json: message(:error, I18n.t('activerecord.models.list.errors.not_found')), status: :not_found
-  end
-
-  def missing_parameter
-    render json: message(:error, I18n.t('actioncontroller.errors.list.invalid_parameters')), status: :conflict
   end
 end
