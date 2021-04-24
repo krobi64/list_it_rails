@@ -3,7 +3,7 @@ class User < ApplicationRecord
   has_secure_password
 
   has_many :lists
-  has_and_belongs_to_many :shared_lists, class_name: 'List', association_foreign_key: :list_id
+  has_and_belongs_to_many :all_lists, class_name: 'List', association_foreign_key: :list_id
   has_many :invites, foreign_key: 'recipient_id'
   has_many :sent_invites, class_name: 'Invite', foreign_key: 'sender_id'
 
@@ -30,5 +30,12 @@ class User < ApplicationRecord
 
   def all_lists
     lists + shared_lists
+
+  def list(list_id)
+    all_lists.where(list_id: list_id, user_id: id).first
+  end
+
+  def shared_lists
+    all_lists.where.not(user_id: self.id)
   end
 end
