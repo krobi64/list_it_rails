@@ -52,8 +52,4 @@ class ListsController < ApplicationController
   def list_params
     params.require(:list).permit(:name)
   end
-
-  def not_found
-    render json: message(:error, I18n.t('activerecord.models.list.errors.not_found')), status: :not_found
-  end
 end
