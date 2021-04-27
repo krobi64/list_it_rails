@@ -1,13 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe "Accounts", type: :request do
-
-  # describe "GET /index" do
-  #   it "returns http success" do
-  #     get "/users/index"
-  #     expect(response).to have_http_status(:success)
-  #   end
-  # end
   let(:email) { 'joe@example.test' }
   let(:password) { 'ThisIs1VeryValidPassword!' }
 
@@ -113,26 +106,4 @@ RSpec.describe "Accounts", type: :request do
       end
     end
   end
-
-  # describe "GET /show" do
-  #   it "returns http success" do
-  #     get "/users/show"
-  #     expect(response).to have_http_status(:success)
-  #   end
-  # end
-  #
-  # describe "GET /update" do
-  #   it "returns http success" do
-  #     get "/users/update"
-  #     expect(response).to have_http_status(:success)
-  #   end
-  # end
-  #
-  # describe "GET /delete" do
-  #   it "returns http success" do
-  #     get "/users/delete"
-  #     expect(response).to have_http_status(:success)
-  #   end
-  # end
-
 end

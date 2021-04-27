@@ -16,6 +16,7 @@ class ListsController < ApplicationController
   end
 
   def show
+    current_list = current_user.all_lists.find(params[:id])
     render json: message(:success, current_list)
   end
 
