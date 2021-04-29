@@ -1,12 +1,7 @@
 class AccountsController < ApplicationController
-  skip_before_action :authenticate_request, only: [:create, :new]
+  skip_before_action :authenticate_request, only: [:create]
 
   def index
-  end
-
-  def new
-    @token = params[:invite_token]
-    render json: message(:success, {invite_token: @token})
   end
 
   def create
