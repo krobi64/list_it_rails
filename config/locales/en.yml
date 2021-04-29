@@ -44,6 +44,9 @@ en:
             base:
               failure: Failure creating account
       invalid_email: Invalid email address
+    success:
+      models:
+        send_invite: Invitation sent
   activerecord:
     models:
       list:

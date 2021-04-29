@@ -7,6 +7,12 @@ Rails.application.routes.draw do
       resources :items
     end
 
+    resources :invites, only: [:index, :show, :create, :destroy] do
+      member do
+        put '/resend', to: 'invites#resend'
+      end
+    end
+
     resources :accounts
 
     post 'authenticate', to: 'authentication#authenticate'
