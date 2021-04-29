@@ -8,11 +8,15 @@ RSpec.describe SendInvite do
   subject { described_class.new(email, list, sender, recipient) }
 
   let(:email) { 'joe@example.test' }
-  let(:sender) { create :user_with_lists }
+  let(:sender) { create :user }
   let(:list) { sender.lists.first }
   let(:recipient) { nil }
 
   let(:send_invite_command) { subject.call }
+
+  before do
+    2.times { |i| sender.all_lists.create(name: "List #{i}", user: sender) }
+  end
 
   context 'with valid parameters and no recipient' do
     it 'is successful' do
