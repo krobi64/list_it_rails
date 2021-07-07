@@ -2,6 +2,7 @@ require 'rails_helper'
 require 'json_web_token'
 
 RSpec.describe 'Authenticate', type: :request do
+  INVALID_CREDENTIALS = I18n.t('activemodel.errors.models.authenticate_user.failure')
 
   describe "POST /authenticate" do
     subject { JSON.parse response.body }
@@ -33,11 +34,14 @@ RSpec.describe 'Authenticate', type: :request do
         post authenticate_path
       end
 
-      it 'responds with 401' do
+      it 'responds with :unauthorized' do
         expect(response).to have_http_status(:unauthorized)
+      end
+
+      it 'returns an error packet' do
         expect(subject['status']).to eq('error')
         expect(subject['payload']).to have_key('user_authentication')
-        expect(subject['payload']['user_authentication']).to eq('invalid credentials')
+        expect(subject['payload']['user_authentication']).to eq(INVALID_CREDENTIALS)
       end
     end
 
@@ -51,7 +55,7 @@ RSpec.describe 'Authenticate', type: :request do
         expect(response).to have_http_status(:unauthorized)
         expect(subject['status']).to eq('error')
         expect(subject['payload']).to have_key('user_authentication')
-        expect(subject['payload']['user_authentication']).to eq('invalid credentials')
+        expect(subject['payload']['user_authentication']).to eq(INVALID_CREDENTIALS)
       end
 
     end
