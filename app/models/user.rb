@@ -2,7 +2,10 @@ class User < ApplicationRecord
 
   has_secure_password
 
-  has_and_belongs_to_many :lists
+  has_many :lists
+  has_and_belongs_to_many :shared_lists, class_name: 'List', association_foreign_key: :list_id
+  has_many :invites, foreign_key: 'recipient_id'
+  has_many :sent_invites, class_name: 'Invite', foreign_key: 'sender_id'
 
   # Reference https://medium.com/@Timothy_Fell/how-to-set-password-requirements-in-rails-d9081926923b
   PASSWORD_REQUIREMENTS = /\A
@@ -13,7 +16,7 @@ class User < ApplicationRecord
     (?=.*[[:^alnum:]])
   /x
 
-  validate :email_value
+  validates_with EmailValidator
 
   validates :email,
             uniqueness: { case_sensitive: false, message: 'Email already in use' }
@@ -25,10 +28,7 @@ class User < ApplicationRecord
                 message: 'is missing one or more requirements.'
             }
 
-  private
-
-    def email_value
-      errors.add(:email, 'Invalid email address') unless Truemail.valid?(email, with: :regex)
-    end
-
+  def all_lists
+    lists + shared_lists
+  end
 end

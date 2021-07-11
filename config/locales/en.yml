@@ -30,6 +30,9 @@
 # available at https://guides.rubyonrails.org/i18n.html.
 
 en:
+  access:
+    errors:
+      unauthorized: Unauthorized Access
   activemodel:
     errors:
       models:
@@ -40,3 +43,23 @@ en:
           attributes:
             base:
               failure: Failure creating account
+      invalid_email: Invalid email address
+  activerecord:
+    models:
+      list:
+        errors:
+            not_found: List not found
+      user:
+        errors:
+            not_found: User not found
+      invite:
+        errors:
+            email_in_use: Email is already in use
+  routes:
+    errors:
+      not_found: Not Found
+  actioncontroller:
+    errors:
+      list:
+        invalid_parameters: Invalid Payload, refer to the api documentation
+

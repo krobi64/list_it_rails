@@ -23,7 +23,7 @@ All calls require a valid JWT **except**:
 * POST /authenticate
 
 The JWT token MUST be sent in the AUTHORIZATION header of the request.
-```
+```http request
 headers["AUTHORIZATION"] = "token <JWT token value>"
 ```
 
@@ -42,7 +42,7 @@ All calls return the appropriate http status and a JSON body that contains the f
 * payload: specific returned value | error list
 
 ### Create Account
-```
+```http request
 POST /accounts
 ```
 #### body
@@ -76,7 +76,7 @@ POST /accounts
 } 
 ```
 ##### error
-* status 422
+* status 400
 ```json
 {
     "status": "error",
@@ -87,8 +87,8 @@ POST /accounts
 }
 ```
 
-### AUTHENTICATE USER
-```
+### Authenticate user
+```http request
 POST /authenticate
 ```
 #### body
@@ -118,35 +118,222 @@ POST /authenticate
     }
 }
 ```
-
-### AUTHENTICATE USER
-```
-POST /authenticate
+## Lists
+### Create List
+Creates a list owned by the current user.
+```http request
+POST /lists
 ```
 #### body
-```
+```json
 {
-    'email': <User email>,
-    'password': <User password>
+  "name": "List name"
 }
 ```
 
 #### responses
 ##### success
-* status: 200
-```
-{
-   'status': 'success',
-   'payload': <JWT token>
-} 
-```
+* Status: 201
+* No body
+
 ##### error
-* status: 401
-```
+* Status 400
+```json
 {
-    'status': 'error',
-    'payload': {
-        'user_authentication': 'invalid credentials'
-    }
+  "status": "error",
+  "payload": {
+      "name": ["can't be blank"]
+  }
 }
 ```
+
+### Get Lists
+Retrieves all lists owned by or shared with the current user. Will return an empty array if no lists meet this criteria .
+```http request
+GET /lists
+```
+
+#### responses
+##### success
+* Status: 200
+```json
+{
+  "status": "success",
+  "payload": [
+    {
+      "id": 1,
+      "name": "List 1",
+      "user": {
+        "id": 1
+      }
+    },
+    {
+      "id": 23,
+      "name": "List 2",
+      "user": {
+        "id": 3
+      }
+    }
+  ]
+}
+```
+
+##### error
+* Status: 401
+```json
+{
+  "status": "error",
+  "payload": "Unauthorized Access"
+}
+```
+
+### Retrieve a Specific List
+Returns a single list either owned by or shared with the current user.
+```http request
+GET /lists/:list_id
+```
+#### responses
+##### success
+* Status: 200
+```json
+{
+  "status": "success",
+  "payload": {
+    "id": 1,
+    "name": "List 1",
+    "user": {
+      "id": 1
+    }
+  }
+}
+```
+##### error
+* Status: 404
+```json
+{
+  "status": "error",
+  "payload": "List not found"
+    
+}
+```
+### Edit List
+Modify the name of an existing list owned by the current user.
+```http request
+PUT /lists/:list_id
+```
+#### body
+```json
+{
+  "name": "New list name"
+}
+```
+#### responses
+##### success
+* Status: 204
+* No body
+
+##### errors
+* Status: 400
+```json
+{
+  "status": "error",
+  "payload": "Invalid Payload, refer to the api documentation"
+}
+```
+or
+* Status: 401
+```json
+{
+  "status": "error",
+  "payload": "Unauthorized Access"
+}
+```
+or
+* Status: 404
+```json
+{
+  "status": "error",
+  "payload": "List not found"
+}
+```
+
+### Delete List
+Delete a list the current user owns.
+```http request
+DELETE /lists/:list_id
+```
+#### responses
+##### success
+* Status: 204
+* No body
+##### errors
+* Status: 401
+```json
+{
+  "status": "error",
+  "payload": "Unauthorized Access"
+}
+```
+or
+* Status: 404
+```json
+{
+  "status": "error",
+  "payload": "List not found"
+}
+```
+
+### Share List
+Share a list with another person. If the user is not a member, invite via email.
+```http request
+PUT /lists/:list_id
+```
+#### body
+
+```json
+{
+  "email": "valid email address"
+}
+```
+#### responses
+##### success
+* Status: 200
+```json
+{
+  "status": "success",
+  "payload": "User successfully added"
+}
+```
+or
+```json
+{
+  "status": "success",
+  "payload": "Invitation sent."
+}
+```
+##### errors
+* Status: 400
+```json
+{
+  "status": "error",
+  "payload": "Invalid email address"
+}
+or
+```
+* Status: 401
+```json
+{
+  "status": "error",
+  "payload": "Unauthorized Access"
+}
+```
+or
+* Status: 404
+```json
+{
+  "status": "error",
+  "payload": "List not found"
+}
+```
+
+
