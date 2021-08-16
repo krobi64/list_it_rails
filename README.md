@@ -283,31 +283,111 @@ or
 }
 ```
 
+## Invitations
+Invitations allow a user to share a list with another. If the target user does not yet have an account, they will be 
+directed to the account creation page first.
+### Create Invitation
+Invite a user to share a list.
 ```http request
+POST /invites
 ```
-#### body
 
 ```json
 {
+  "email": "valid email address for invited user",
+  "list_id": "valid list owned by requesting user"
 }
 ```
 #### responses
 ##### success
-```json
-{
-  "status": "success",
-}
-```
-```json
-{
-}
-```
+* Status: 201
+* No content
+##### errors
+* Status: 400
 ```json
 {
   "status": "error",
+  "payload": "Invalid email address"
 }
-or
 ```
+or
+* Status: 401
+```json
+{
+  "status": "error",
+  "payload": "Unauthorized Access"
+}
+```
+or
+* Status: 404
+```json
+{
+  "status": "error",
+  "payload": "List not found"
+}
+```
+### Get invitations
+Retrieve all invitations either sent by or sent to the current user.
+```http request
+GET /invites
+```
+
+#### responses
+##### success
+* Status: 200
+
+```json
+{
+  "status": "success",
+  "payload": [
+    {
+      "id": "invitation id",
+      "list": {
+        "list_id": "id",
+        "name": "list name"
+      },
+      "sender": {
+        "name": "owner_name"
+      },
+      "recipient": {
+        "name": "recipient name"
+      },
+      "status": "status of invitation"
+    }
+  ]
+}
+```
+
+### Show Invitation
+Return the details of an individual invitation.
+```http request
+GET /invites/:invite_id
+```
+
+#### responses
+##### success
+* Status: 200
+
+```json
+{
+  "status": "success",
+  "payload": {
+    "id": "invitation id",
+    "list": {
+      "list_id": "id",
+      "name": "list name"
+    },
+    "sender": {
+      "name": "owner_name"
+    },
+    "recipient": {
+      "name": "recipient name"
+    },
+    "status": "status of invitation"
+  }
+}
+```
+##### error
 * Status: 401
 ```json
 {
@@ -324,4 +404,68 @@ or
 }
 ```
 
+### Resend Invitation
+Emails the invitation to the recipient again.
 
+```http request
+PUT /invites/:invite_id/resend
+```
+
+#### response
+##### success
+* Status: 200
+
+```json
+{
+  "status": "success",
+  "payload": "Invitation emailed"
+}
+```
+
+### AcceptInvitation
+Grants access to the shared list once the recipient has actively chosen to join the list.
+```http request
+POST /invites/:invite_token
+```
+
+#### responses
+##### success
+* Status: 200
+
+```json
+{
+  "status": "success",
+  "payload": "List successfully added"
+}
+```
+
+##### error
+* Status: 
+
+### Delete Invitation
+The sender removes a user from a list and marks the original invitation DISABLED.
+```http request
+DELETE /invites/:invite_id
+```
+#### responses
+##### success
+* Status: 204
+* No body
+
+##### error
+
+* Status: 401
+```json
+{
+  "status": "error",
+  "payload": "Unauthorized Access"
+}
+```
+or
+* Status: 404
+```json
+{
+  "status": "error",
+  "payload": "List not found"
+}
+```

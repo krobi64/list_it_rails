@@ -3,6 +3,7 @@ class ApplicationController < ActionController::API
   before_action :authenticate_request
   attr_reader :current_user
 
+  rescue_from ListItError::ListNotFound, with: :list_not_found
   rescue_from ActiveRecord::RecordNotFound, with: :not_found
   rescue_from ActionController::ParameterMissing, with: :missing_parameter
 
@@ -31,6 +32,10 @@ class ApplicationController < ActionController::API
 
     def not_found
       render json: message(:error, I18n.t("activerecord.models.#{model_string}.errors.not_found")), status: :not_found
+    end
+
+    def list_not_found
+      render json: message(:error, I18n.t('activerecord.models.list.errors.not_found')), status: :not_found
     end
 
     def missing_parameter

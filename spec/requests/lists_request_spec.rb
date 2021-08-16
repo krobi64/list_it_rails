@@ -32,7 +32,7 @@ RSpec.describe "Lists", type: :request do
       let(:body) { {list: {name: 'A list'}} }
 
       it_behaves_like 'a successful request without a body'
-      it 'returns a success status' do
+      it 'returns a created status' do
         expect(response).to have_http_status(:created)
       end
     end
@@ -227,46 +227,4 @@ RSpec.describe "Lists", type: :request do
       end
     end
   end
-
-  # TODO: move to an Invitation Controller
-  # describe "POST /share" do
-  #   context 'with an existing user' do
-  #     before do
-  #       @owner = create(:user_with_lists)
-  #       @list = @owner.lists.first
-  #       @user = create(:user)
-  #       token = JsonWebToken.encode(id: @owner.id)
-  #       @header = { AUTHORIZATION: "token #{token}" }
-  #       put "/lists/#{@list.id}/share", params: {email: @user.email}, headers: @header
-  #     end
-  #
-  #     it 'returns a :accepted http status' do
-  #       expect(response).to have_http_status (:accepted)
-  #     end
-
-      # TODO: add an action to accept an invitation
-      # it 'adds the list to the second user' do
-      #   token = JsonWebToken.encode(id: @user.id)
-      #   header = { AUTHORIZATION: "token #{token}" }
-      #   get '/lists', headers: header
-      #   actual = response_body['payload'].any? { |list| list['id'] == @list.id }
-      #   expect(actual).to eq(true)
-      # end
-  #   end
-  #
-  #   context 'without an existing user account' do
-  #     before do
-  #       @new_email = 'non_existing@example.com'
-  #       @owner = create(:user_with_lists)
-  #       @list = @owner.lists.first
-  #       token = JsonWebToken.encode(id: @owner.id)
-  #       @header = { AUTHORIZATION: "token #{token}" }
-  #       put "/lists/#{@list.id}/share", params: {email: @new_email}, headers: @header
-  #     end
-  #
-  #     it 'returns a :accepted status' do
-  #       expect(response).to have_http_status(:accepted)
-  #     end
-  #   end
-  # end
 end

@@ -67,7 +67,7 @@ RSpec.describe "Accounts", type: :request do
 
     context 'with an invalid email' do
       let(:email) { 'Joe@abc' }
-      it 'returns a 422 status' do
+      it 'returns a bad_request status' do
         post '/accounts', params: { user: params }
         expect(response).to have_http_status(:bad_request)
       end

@@ -17,6 +17,7 @@ ActiveRecord::Schema.define(version: 2021_02_17_194459) do
     t.integer "list_id"
     t.integer "sender_id"
     t.integer "recipient_id"
+    t.integer "status", default: 1
     t.string "token"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false

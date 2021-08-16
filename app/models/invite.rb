@@ -1,5 +1,6 @@
 class Invite < ApplicationRecord
   before_create :generate_token
+  before_create :correct_status
 
   belongs_to :list
   belongs_to :sender, class_name: 'User'
@@ -7,13 +8,25 @@ class Invite < ApplicationRecord
 
   validates_with EmailValidator
 
+  STATUS = {
+    disabled: 0,
+    created: 1,
+    emailed: 2,
+    accepted: 3,
+    error: 4
+  }
+
   private
 
     def self.all_invites(user)
-      Invite.where(sender_id: user.id).or(Invite.where(recipient_id: user.id)).all
+      Invite.where(sender_id: user.id).or(Invite.where(recipient_id: user.id)).or(Invite.where(email: user.email)).all
     end
 
     def generate_token
       self.token = SecureRandom.hex(16)
+    end
+
+    def correct_status
+      self.status = STATUS[:created]
     end
 end

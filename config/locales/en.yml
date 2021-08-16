@@ -43,10 +43,15 @@ en:
           attributes:
             base:
               failure: Failure creating account
+
+        accept_invite:
+          attributes:
+            token: Invalid token
       invalid_email: Invalid email address
     success:
       models:
         send_invite: Invitation sent
+        accept_invite: List successfully added
   activerecord:
     models:
       list:
@@ -58,6 +63,7 @@ en:
       invite:
         errors:
             email_in_use: Email is already in use
+            not_found: Invitation not found
   routes:
     errors:
       not_found: Not Found

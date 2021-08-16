@@ -8,6 +8,10 @@ Rails.application.routes.draw do
     end
 
     resources :invites, only: [:index, :show, :create, :destroy] do
+      collection do
+        post '/accept/:token', to: 'invites#accept', as: :accept
+      end
+
       member do
         put '/resend', to: 'invites#resend'
       end

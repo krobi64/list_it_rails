@@ -27,6 +27,10 @@ RSpec.describe SendInvite do
       send_invite_command
       expect(Invite.where(sender: sender, list: list).first).to be_an Invite
     end
+
+    it 'returns the Invitation with the token' do
+      expect(send_invite_command.result)
+    end
   end
 
   context 'with valid parameters including a recipient' do

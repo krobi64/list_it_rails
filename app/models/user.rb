@@ -32,6 +32,10 @@ class User < ApplicationRecord
     invites.where(id: invite_id, recipient_id: id).or(sent_invites.where(id: invite_id, sender_id: id)).first
   end
 
+  def full_name
+    "#{first_name} #{last_name}".strip
+  end
+
   def list(list_id)
     all_lists.where(list_id: list_id, user_id: id).first
   end

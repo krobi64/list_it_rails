@@ -8,12 +8,7 @@ class AccountsController < ApplicationController
     command = CreateAccount.call(user_params[:email], user_params[:password], user_params[:password_confirmation], user_params[:first_name], user_params[:last_name])
 
     if command.success?
-      if params[:invite_token].present?
-        invite = Invite.find_by(token: params[:invite_token])
-        list = invite.list
-        user = User.find_by(:email, user_params[:email])
-        user.shared_lists << list
-      end
+      process_invite if params[:token].present?
       render json: message(:success, command.result), status: :created
     else
       render json: message(:error, command.errors), status: :bad_request
@@ -30,6 +25,11 @@ class AccountsController < ApplicationController
   end
 
   private
+    def process_invite
+      user = User.find(email: user_params[:email])
+      AcceptInvite.new(user, params[:token]).call
+    end
+
     def user_params
       params.require(:user).permit(:email, :password, :password_confirmation, :first_name, :last_name)
     end
