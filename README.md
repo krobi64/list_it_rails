@@ -52,7 +52,7 @@ POST /accounts
     "password": "a valid password",
     "passord_confirmation": "a valid confirmation",
     "first_name": "an optional first name",
-    "last_name": "an optional last_name"
+    "last_name": "an optional last name"
 }
 ```
 * email (**required**): a valid email address
@@ -283,40 +283,28 @@ or
 }
 ```
 
-### Share List
-Share a list with another person. If the user is not a member, invite via email.
 ```http request
-PUT /lists/:list_id
 ```
 #### body
 
 ```json
 {
-  "email": "valid email address"
 }
 ```
 #### responses
 ##### success
-* Status: 200
 ```json
 {
   "status": "success",
-  "payload": "User successfully added"
 }
 ```
-or
 ```json
 {
-  "status": "success",
-  "payload": "Invitation sent."
 }
 ```
-##### errors
-* Status: 400
 ```json
 {
   "status": "error",
-  "payload": "Invalid email address"
 }
 or
 ```
