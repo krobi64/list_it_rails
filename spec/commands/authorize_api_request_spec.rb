@@ -23,7 +23,7 @@ RSpec.describe AuthorizeApiRequest do
       header = { accept: 'application/json' }
       response = AuthorizeApiRequest.new(header).call
       expect(response).to be_failure
-      expect(response.errors[:token]).to include('Missing token')
+      expect(response.errors[:token]).to include(MISSING_TOKEN)
     end
   end
 
@@ -32,7 +32,7 @@ RSpec.describe AuthorizeApiRequest do
       header = { 'AUTHORIZATION' => 'Bearer Token: 12345'}
       response = AuthorizeApiRequest.new(header).call
       expect(response).to be_failure
-      expect(response.errors[:token]).to include('Invalid token')
+      expect(response.errors[:token]).to include(INVALID_TOKEN)
     end
   end
 end

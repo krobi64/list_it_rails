@@ -11,4 +11,12 @@ class List < ApplicationRecord
   validates :name, presence: true
 
   default_scope { select(:id, :name, :user_id) }
+
+  def as_json(options = nil)
+    {
+      "id" => id,
+      "created_by" => user.full_name,
+      "name" => name
+    }
+  end
 end

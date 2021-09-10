@@ -1,9 +1,6 @@
 require 'rails_helper'
 require_relative '../support/shared_response'
 
-LIST_NOT_FOUND = I18n.t('activerecord.models.list.errors.not_found')
-USER_NOT_FOUND = I18n.t('activerecord.models.user.errors.not_found')
-INVALID_PARAMETER = I18n.t('actioncontroller.errors.list.invalid_parameters')
 
 RSpec.describe "Lists", type: :request do
 

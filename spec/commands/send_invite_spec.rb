@@ -2,8 +2,6 @@
 
 require 'rails_helper'
 
-INVALID_EMAIL_ADDRESS = I18n.t('activemodel.errors.invalid_email')
-
 RSpec.describe SendInvite do
   subject { described_class.new(email, list, sender, recipient) }
 

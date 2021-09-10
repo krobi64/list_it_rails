@@ -2,8 +2,6 @@ require 'rails_helper'
 require 'json_web_token'
 
 RSpec.describe 'Authenticate', type: :request do
-  INVALID_CREDENTIALS = I18n.t('activemodel.errors.models.authenticate_user.failure')
-
   describe "POST /authenticate" do
     subject { JSON.parse response.body }
 

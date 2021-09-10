@@ -163,16 +163,12 @@ GET /lists
     {
       "id": 1,
       "name": "List 1",
-      "user": {
-        "id": 1
-      }
+      "user": "owner1 name"
     },
     {
       "id": 23,
       "name": "List 2",
-      "user": {
-        "id": 3
-      }
+      "user": "owner3 name"
     }
   ]
 }
@@ -328,6 +324,9 @@ or
 ```
 ### Get invitations
 Retrieve all invitations either sent by or sent to the current user.
+This excludes any deleted invitations. To invite a user again,
+create a new invitation.
+
 ```http request
 GET /invites
 ```
@@ -359,7 +358,7 @@ GET /invites
 ```
 
 ### Show Invitation
-Return the details of an individual invitation.
+Return the details of an individual invitation. This excludes any disabled Invitation. 
 ```http request
 GET /invites/:invite_id
 ```
@@ -377,12 +376,8 @@ GET /invites/:invite_id
       "list_id": "id",
       "name": "list name"
     },
-    "sender": {
-      "name": "owner_name"
-    },
-    "recipient": {
-      "name": "recipient name"
-    },
+    "sender": "owner_name",
+    "recipient": "recipient name",
     "status": "status of invitation"
   }
 }
@@ -418,14 +413,14 @@ PUT /invites/:invite_id/resend
 ```json
 {
   "status": "success",
-  "payload": "Invitation emailed"
+  "payload": "Invitation sent"
 }
 ```
 
-### AcceptInvitation
+### Accept Invitation
 Grants access to the shared list once the recipient has actively chosen to join the list.
 ```http request
-POST /invites/:invite_token
+PUT /invites/accept?token=invite_token_value
 ```
 
 #### responses
@@ -435,12 +430,25 @@ POST /invites/:invite_token
 ```json
 {
   "status": "success",
-  "payload": "List successfully added"
+  "payload": {
+    "list": {
+      "id": "list_id",
+      "name": "name of the list",
+      "created_by": "Name of the person who created the List"
+    }
+  }
 }
 ```
 
 ##### error
-* Status: 
+* Status: 400
+
+```json
+{
+  "status": "error",
+  "payload": "Invalid token"
+}
+```
 
 ### Delete Invitation
 The sender removes a user from a list and marks the original invitation DISABLED.

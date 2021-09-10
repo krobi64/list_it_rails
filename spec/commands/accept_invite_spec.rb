@@ -2,8 +2,6 @@
 
 require 'rails_helper'
 
-INVALID_TOKEN = I18n.t('activemodel.errors.models.accept_invite.attributes.token')
-
 RSpec.describe AcceptInvite do
   subject { described_class.new(recipient, invite_token) }
 
@@ -35,7 +33,7 @@ RSpec.describe AcceptInvite do
 
     it 'returns an error message' do
       actual = accept_invite_command.errors[:token]
-      expect(actual).to eq([INVALID_TOKEN])
+      expect(actual).to eq([INVALID_INVITATION_TOKEN])
     end
   end
 
@@ -49,7 +47,7 @@ RSpec.describe AcceptInvite do
 
     it 'returns an error message' do
       actual = accept_invite_command.errors[:token]
-      expect(actual).to eq([INVALID_TOKEN])
+      expect(actual).to eq([INVALID_INVITATION_TOKEN])
     end
   end
 

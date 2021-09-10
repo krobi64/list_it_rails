@@ -18,7 +18,7 @@ class AuthenticateUser
     user = User.where(email: email).first
     return user if user && user.authenticate(password)
 
-    errors.add :user_authentication, I18n.t('activemodel.errors.models.authenticate_user.failure')
+    errors.add :user_authentication, INVALID_CREDENTIALS
     nil
   end
 end

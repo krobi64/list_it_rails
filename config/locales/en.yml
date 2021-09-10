@@ -39,6 +39,12 @@ en:
         authenticate_user:
           failure: Invalid credentials
 
+        authorize_api_request:
+          attributes:
+            token:
+              missing: Missing token
+              invalid: Invalid token
+
         create_account:
           attributes:
             base:
@@ -46,7 +52,7 @@ en:
 
         accept_invite:
           attributes:
-            token: Invalid token
+            token: Invalid invitation token
       invalid_email: Invalid email address
     success:
       models:
@@ -60,6 +66,8 @@ en:
       user:
         errors:
             not_found: User not found
+            duplicate_email: Email is already in use
+            password: Password is missing one or more requirements.
       invite:
         errors:
             email_in_use: Email is already in use

@@ -1,5 +1,5 @@
 class ApplicationController < ActionController::API
-
+  include Messages
   before_action :authenticate_request
   attr_reader :current_user
 
@@ -8,7 +8,7 @@ class ApplicationController < ActionController::API
   rescue_from ActionController::ParameterMissing, with: :missing_parameter
 
   def route_not_found
-    render json: message(:error, I18n.t('routes.errors.not_found') ), status: :not_found
+    render json: message(:error, NOT_FOUND), status: :not_found
   end
 
   private
@@ -35,11 +35,11 @@ class ApplicationController < ActionController::API
     end
 
     def list_not_found
-      render json: message(:error, I18n.t('activerecord.models.list.errors.not_found')), status: :not_found
+      render json: message(:error, LIST_NOT_FOUND), status: :not_found
     end
 
     def missing_parameter
-      render json: message(:error, I18n.t("actioncontroller.errors.#{model_string}.invalid_parameters")), status: :bad_request
+      render json: message(:error, INVALID_PARAMETER), status: :bad_request
     end
 
 end

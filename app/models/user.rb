@@ -19,13 +19,13 @@ class User < ApplicationRecord
   validates_with EmailValidator
 
   validates :email,
-            uniqueness: { case_sensitive: false, message: 'Email already in use' }
+            uniqueness: { case_sensitive: false, message: DUPLICATE_EMAIL }
 
   validates :password,
             confirmation: true,
             format: {
                 with: PASSWORD_REQUIREMENTS,
-                message: 'is missing one or more requirements.'
+                message: INVALID_PASSWORD
             }
 
   def invite(invite_id)

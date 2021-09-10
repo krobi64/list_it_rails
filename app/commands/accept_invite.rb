@@ -16,7 +16,7 @@ class AcceptInvite
       invite.save
       I18n.t('activemodel.success.models.accept_invite')
     else
-      errors.add(:token, I18n.t('activemodel.errors.models.accept_invite.attributes.token'))
+      errors.add(:token, INVALID_INVITATION_TOKEN)
     end
   end
 end

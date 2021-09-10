@@ -6,4 +6,7 @@ module ListItError
 
   class ListNotFound < Error
   end
+
+  class InvitationNotFound < Error
+  end
 end

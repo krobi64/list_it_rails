@@ -16,10 +16,28 @@ class Invite < ApplicationRecord
     error: 4
   }
 
+  def as_json(options = {})
+    {
+      "id" => id,
+      "email" => email,
+      "list" => list.as_json,
+      "sender" => sender.full_name,
+      "recipient" => recipient.try(:full_name),
+      "status" => status
+    }
+  end
+
   private
 
     def self.all_invites(user)
-      Invite.where(sender_id: user.id).or(Invite.where(recipient_id: user.id)).or(Invite.where(email: user.email)).all
+      Invite.where(sender_id: user.id).
+        or(Invite.where(recipient_id: user.id)).
+        or(Invite.where(email: user.email)).
+        and(Invite.where(status: [
+          STATUS[:created],
+          STATUS[:emailed],
+          STATUS[:accepted],
+          STATUS[:error]])).all
     end
 
     def generate_token
