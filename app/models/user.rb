@@ -3,7 +3,7 @@ class User < ApplicationRecord
   has_secure_password
 
   has_many :lists
-  has_and_belongs_to_many :all_lists, class_name: 'List', association_foreign_key: :list_id
+  has_and_belongs_to_many :all_lists, class_name: 'List', association_foreign_key: :list_id, dependent: :nullify
   has_many :invites, foreign_key: 'recipient_id'
   has_many :sent_invites, class_name: 'Invite', foreign_key: 'sender_id'
 
@@ -29,7 +29,8 @@ class User < ApplicationRecord
             }
 
   def invite(invite_id)
-    invites.where(id: invite_id, recipient_id: id).or(sent_invites.where(id: invite_id, sender_id: id)).first
+    invitation = invites.where(id: invite_id, recipient_id: id).or(sent_invites.where(id: invite_id, sender_id: id)).first
+    invitation || raise(ListItError::InvitationNotFound.new)
   end
 
   def full_name

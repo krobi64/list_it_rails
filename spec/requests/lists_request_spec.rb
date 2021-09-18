@@ -1,6 +1,6 @@
-require 'rails_helper'
-require_relative '../support/shared_response'
+# frozen_string_literal: true
 
+require 'rails_helper'
 
 RSpec.describe "Lists", type: :request do
 
@@ -69,7 +69,7 @@ RSpec.describe "Lists", type: :request do
       before do
         user = create(:user)
         2.times { |i| user.all_lists.create(name: "List #{i}", user: user)}
-        @user_id = user.id
+        @created_by = user.full_name
         token = JsonWebToken.encode(id: user.id)
         header = { AUTHORIZATION: "token #{token}"}
         get '/lists', headers: header
@@ -81,7 +81,7 @@ RSpec.describe "Lists", type: :request do
       end
 
       it 'returns only lists owned by the current_user' do
-        expect(response_body['payload'].all? { |list| list['user_id'] == @user_id}).to eq(true)
+        expect(response_body['payload'].all? { |list| list['created_by'] == @created_by}).to eq(true)
       end
     end
   end

@@ -7,6 +7,7 @@ class Invite < ApplicationRecord
   belongs_to :recipient, class_name: 'User', optional: true
 
   validates_with EmailValidator
+  default_scope { where.not(status: STATUS[:disabled]) }
 
   STATUS = {
     disabled: 0,

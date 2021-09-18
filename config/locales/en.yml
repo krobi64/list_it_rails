@@ -77,6 +77,8 @@ en:
       not_found: Not Found
   actioncontroller:
     errors:
+      account:
+        not_found: No security token found. Please login or create an account.
       list:
         invalid_parameters: Invalid Payload, refer to the api documentation
 

@@ -27,7 +27,7 @@ RSpec.describe SendInvite do
     end
 
     it 'returns the Invitation with the token' do
-      expect(send_invite_command.result)
+      expect(send_invite_command.result).to be_an(Invite)
     end
   end
 

@@ -26,8 +26,12 @@ class InvitesController < ApplicationController
   end
 
   def destroy
-    owner_invite.destroy
-    head :no_content
+    command = WithdrawInvite.new(current_user, owner_invite).call
+    if command.success?
+      head :no_content
+    else
+      render json: message(:error, command.errors), status: :not_found
+    end
   end
 
   # TODO: Add mailer

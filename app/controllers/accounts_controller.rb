@@ -1,7 +1,11 @@
 class AccountsController < ApplicationController
-  skip_before_action :authenticate_request, only: [:create]
+  skip_before_action :authenticate_request, only: [:create, :new]
 
   def index
+  end
+
+  def new
+    @token = params[:token]
   end
 
   def create

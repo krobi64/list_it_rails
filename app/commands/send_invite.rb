@@ -10,18 +10,19 @@ class SendInvite
   end
 
   def call
-    invitation = create_invitation
-    email_invitation if invitation && invitation.valid?
+    create_invitation
   end
 
   private
+    attr_reader :email, :list, :sender, :recipient
     def create_invitation
-      invitation = @sender.sent_invites.create(
-        email: @email,
-        list: @list,
-        recipient: @recipient
+      invitation = sender.sent_invites.create(
+        email: email,
+        list: list,
+        recipient: recipient
       )
       if invitation.persisted?
+        email_invitation
         return invitation
       else
         invitation.errors.each do |err|

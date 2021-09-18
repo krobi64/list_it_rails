@@ -1,9 +1,11 @@
 class ApplicationController < ActionController::API
   include Messages
   before_action :authenticate_request
+  skip_before_action :authenticate_request, only: :route_not_found
   attr_reader :current_user
 
   rescue_from ListItError::ListNotFound, with: :list_not_found
+  rescue_from ListItError::InvitationNotFound, with: :invitation_not_found
   rescue_from ActiveRecord::RecordNotFound, with: :not_found
   rescue_from ActionController::ParameterMissing, with: :missing_parameter
 
@@ -36,6 +38,10 @@ class ApplicationController < ActionController::API
 
     def list_not_found
       render json: message(:error, LIST_NOT_FOUND), status: :not_found
+    end
+
+    def invitation_not_found
+      render json: message(:error, INVITATION_NOT_FOUND), status: :not_found
     end
 
     def missing_parameter
