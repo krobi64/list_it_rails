@@ -13,9 +13,10 @@
 # it.
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
-
+ENV['RAILS_ENV'] = 'test'
 require 'database_cleaner/active_record'
 DatabaseCleaner.strategy = :truncation
+require_relative './support/shared_response'
 
 RSpec.configure do |config|
   config.before(:each) do
