@@ -23,7 +23,7 @@ All calls require a valid JWT **except**:
 * POST /authenticate
 
 The JWT token MUST be sent in the AUTHORIZATION header of the request.
-```
+```http request
 headers["AUTHORIZATION"] = "token <JWT token value>"
 ```
 
@@ -42,7 +42,7 @@ All calls return the appropriate http status and a JSON body that contains the f
 * payload: specific returned value | error list
 
 ### Create Account
-```
+```http request
 POST /accounts
 ```
 #### body
@@ -52,7 +52,7 @@ POST /accounts
     "password": "a valid password",
     "passord_confirmation": "a valid confirmation",
     "first_name": "an optional first name",
-    "last_name": "an optional last_name"
+    "last_name": "an optional last name"
 }
 ```
 * email (**required**): a valid email address
@@ -76,7 +76,7 @@ POST /accounts
 } 
 ```
 ##### error
-* status 422
+* status 400
 ```json
 {
     "status": "error",
@@ -87,8 +87,8 @@ POST /accounts
 }
 ```
 
-### AUTHENTICATE USER
-```
+### Authenticate user
+```http request
 POST /authenticate
 ```
 #### body
@@ -118,35 +118,362 @@ POST /authenticate
     }
 }
 ```
-
-### AUTHENTICATE USER
-```
-POST /authenticate
+## Lists
+### Create List
+Creates a list owned by the current user.
+```http request
+POST /lists
 ```
 #### body
-```
+```json
 {
-    'email': <User email>,
-    'password': <User password>
+  "name": "List name"
 }
 ```
 
 #### responses
 ##### success
-* status: 200
-```
+* Status: 201
+* No body
+
+##### error
+* Status 400
+```json
 {
-   'status': 'success',
-   'payload': <JWT token>
-} 
+  "status": "error",
+  "payload": {
+      "name": ["can't be blank"]
+  }
+}
+```
+
+### Get Lists
+Retrieves all lists owned by or shared with the current user. Will return an empty array if no lists meet this criteria .
+```http request
+GET /lists
+```
+
+#### responses
+##### success
+* Status: 200
+```json
+{
+  "status": "success",
+  "payload": [
+    {
+      "id": 1,
+      "name": "List 1",
+      "user": "owner1 name"
+    },
+    {
+      "id": 23,
+      "name": "List 2",
+      "user": "owner3 name"
+    }
+  ]
+}
+```
+
+##### error
+* Status: 401
+```json
+{
+  "status": "error",
+  "payload": "Unauthorized Access"
+}
+```
+
+### Retrieve a Specific List
+Returns a single list either owned by or shared with the current user.
+```http request
+GET /lists/:list_id
+```
+#### responses
+##### success
+* Status: 200
+```json
+{
+  "status": "success",
+  "payload": {
+    "id": 1,
+    "name": "List 1",
+    "user": {
+      "id": 1
+    }
+  }
+}
 ```
 ##### error
-* status: 401
-```
+* Status: 404
+```json
 {
-    'status': 'error',
-    'payload': {
-        'user_authentication': 'invalid credentials'
+  "status": "error",
+  "payload": "List not found"
+    
+}
+```
+### Edit List
+Modify the name of an existing list owned by the current user.
+```http request
+PUT /lists/:list_id
+```
+#### body
+```json
+{
+  "name": "New list name"
+}
+```
+#### responses
+##### success
+* Status: 204
+* No body
+
+##### errors
+* Status: 400
+```json
+{
+  "status": "error",
+  "payload": "Invalid Payload, refer to the api documentation"
+}
+```
+or
+* Status: 401
+```json
+{
+  "status": "error",
+  "payload": "Unauthorized Access"
+}
+```
+or
+* Status: 404
+```json
+{
+  "status": "error",
+  "payload": "List not found"
+}
+```
+
+### Delete List
+Delete a list the current user owns.
+```http request
+DELETE /lists/:list_id
+```
+#### responses
+##### success
+* Status: 204
+* No body
+##### errors
+* Status: 401
+```json
+{
+  "status": "error",
+  "payload": "Unauthorized Access"
+}
+```
+or
+* Status: 404
+```json
+{
+  "status": "error",
+  "payload": "List not found"
+}
+```
+
+## Invitations
+Invitations allow a user to share a list with another. If the target user does not yet have an account, they will be 
+directed to the account creation page first.
+### Create Invitation
+Invite a user to share a list.
+```http request
+POST /invites
+```
+
+```json
+{
+  "email": "valid email address for invited user",
+  "list_id": "valid list owned by requesting user"
+}
+```
+#### responses
+##### success
+* Status: 201
+* No content
+##### errors
+* Status: 400
+```json
+{
+  "status": "error",
+  "payload": "Invalid email address"
+}
+```
+or
+* Status: 401
+```json
+{
+  "status": "error",
+  "payload": "Unauthorized Access"
+}
+```
+or
+* Status: 404
+```json
+{
+  "status": "error",
+  "payload": "List not found"
+}
+```
+### Get invitations
+Retrieve all invitations either sent by or sent to the current user.
+This excludes any deleted invitations. To invite a user again,
+create a new invitation.
+
+```http request
+GET /invites
+```
+
+#### responses
+##### success
+* Status: 200
+
+```json
+{
+  "status": "success",
+  "payload": [
+    {
+      "id": "invitation id",
+      "list": {
+        "list_id": "id",
+        "name": "list name"
+      },
+      "sender": {
+        "name": "owner_name"
+      },
+      "recipient": {
+        "name": "recipient name"
+      },
+      "status": "status of invitation"
     }
+  ]
+}
+```
+
+### Show Invitation
+Return the details of an individual invitation. This excludes any disabled Invitation. 
+```http request
+GET /invites/:invite_id
+```
+
+#### responses
+##### success
+* Status: 200
+
+```json
+{
+  "status": "success",
+  "payload": {
+    "id": "invitation id",
+    "list": {
+      "list_id": "id",
+      "name": "list name"
+    },
+    "sender": "owner_name",
+    "recipient": "recipient name",
+    "status": "status of invitation"
+  }
+}
+```
+##### error
+* Status: 401
+```json
+{
+  "status": "error",
+  "payload": "Unauthorized Access"
+}
+```
+or
+* Status: 404
+```json
+{
+  "status": "error",
+  "payload": "List not found"
+}
+```
+
+### Resend Invitation
+Emails the invitation to the recipient again.
+
+```http request
+PUT /invites/:invite_id/resend
+```
+
+#### response
+##### success
+* Status: 200
+
+```json
+{
+  "status": "success",
+  "payload": "Invitation sent"
+}
+```
+
+### Accept Invitation
+Grants access to the shared list once the recipient has actively chosen to join the list.
+```http request
+PUT /invites/accept?token=invite_token_value
+```
+
+#### responses
+##### success
+* Status: 200
+
+```json
+{
+  "status": "success",
+  "payload": {
+    "list": {
+      "id": "list_id",
+      "name": "name of the list",
+      "created_by": "Name of the person who created the List"
+    }
+  }
+}
+```
+
+##### error
+* Status: 400
+
+```json
+{
+  "status": "error",
+  "payload": "Invalid token"
+}
+```
+
+### Delete Invitation
+The sender removes a user from a list and marks the original invitation DISABLED.
+```http request
+DELETE /invites/:invite_id
+```
+#### responses
+##### success
+* Status: 204
+* No body
+
+##### error
+
+* Status: 401
+```json
+{
+  "status": "error",
+  "payload": "Unauthorized Access"
+}
+```
+or
+* Status: 404
+```json
+{
+  "status": "error",
+  "payload": "List not found"
 }
 ```

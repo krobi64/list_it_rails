@@ -18,7 +18,7 @@ class AuthenticateUser
     user = User.where(email: email).first
     return user if user && user.authenticate(password)
 
-    errors.add :user_authentication, 'invalid credentials'
+    errors.add :user_authentication, INVALID_CREDENTIALS
     nil
   end
 end

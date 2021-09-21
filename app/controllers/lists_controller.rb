@@ -1,33 +1,30 @@
 class ListsController < ApplicationController
 
-
-  before_action :current_list, only: [:show, :update, :delete, :share]
+  before_action :current_list, only: [ :update, :delete ]
 
   def index
-    render json: {status: :success, payload: @current_user.lists.select(:id, :name).all}
+    render json: message(:success, @current_user.all_lists)
   end
 
   def create
-    if @current_user.lists.create(attributes = list_params)
+    list = @current_user.all_lists.create(list_params.merge(user: current_user))
+    if list.persisted?
       head :created
     else
-      render json: message(:error, @current_user.lists.errors)
+      render json: message(:error, list.errors), status: :bad_request
     end
   end
 
   def show
-    if current_list
-      render json: message(:success, current_list)
-    else
-      render json: message(:error, 'Not found') unless current_list
-    end
+    current_list = current_user.all_lists.find(params[:id])
+    render json: message(:success, current_list)
   end
 
   def update
     if current_list.update(list_params)
-      render json: {status: :success}
+      head(:no_content)
     else
-      render json: {status: error, payload: current_list.errors}
+      render json: message(:error, current_list.errors), status: :bad_request
     end
   end
 
@@ -36,17 +33,10 @@ class ListsController < ApplicationController
     head :no_content
   end
 
-  def share
-    user = User.find(params[:user_id])
-    render json: {status: :error, payload: 'User not found'}, status: :not_found unless user
-    user.lists << current_list
-    head :no_content
-  end
-
   private
 
   def current_list
-    @current_user.lists.find(params[:id])
+    @current_list ||= current_user.lists.find(params[:id])
   end
 
   def list_params

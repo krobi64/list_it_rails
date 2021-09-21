@@ -21,9 +21,9 @@ class AuthorizeApiRequest
   def decoded_auth_token
     return unless http_auth_header
     @decoded_auth_token ||= JsonWebToken.decode(http_auth_header)
-    @decoded_auth_token || errors.add(:token, 'Invalid token')
+    @decoded_auth_token || errors.add(:token, INVALID_TOKEN)
     if @decoded_auth_token && (@decoded_auth_token[:exp] < Time.now.to_i)
-      errors.add(:token, 'Expired token')
+      errors.add(:token, EXPIRED_TOKEN)
       return nil
     end
     @decoded_auth_token
@@ -33,7 +33,7 @@ class AuthorizeApiRequest
     if headers['AUTHORIZATION'].present?
       return headers['AUTHORIZATION'].split(' ').last
     else
-      errors.add(:token, 'Missing token')
+      errors.add(:token, MISSING_TOKEN)
     end
     nil
   end

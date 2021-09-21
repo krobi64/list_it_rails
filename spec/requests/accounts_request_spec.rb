@@ -1,13 +1,8 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe "Accounts", type: :request do
-
-  # describe "GET /index" do
-  #   it "returns http success" do
-  #     get "/users/index"
-  #     expect(response).to have_http_status(:success)
-  #   end
-  # end
   let(:email) { 'joe@example.test' }
   let(:password) { 'ThisIs1VeryValidPassword!' }
 
@@ -74,9 +69,9 @@ RSpec.describe "Accounts", type: :request do
 
     context 'with an invalid email' do
       let(:email) { 'Joe@abc' }
-      it 'returns a 422 status' do
+      it 'returns a bad_request status' do
         post '/accounts', params: { user: params }
-        expect(response).to have_http_status(:conflict)
+        expect(response).to have_http_status(:bad_request)
       end
 
       it 'returns a JSON package with an error status' do
@@ -97,7 +92,7 @@ RSpec.describe "Accounts", type: :request do
 
       it 'returns a 422 status' do
         post '/accounts', params: { user: params }
-        expect(response).to have_http_status(:conflict)
+        expect(response).to have_http_status(:bad_request)
       end
 
       it 'returns a JSON package with an error status' do
@@ -113,26 +108,4 @@ RSpec.describe "Accounts", type: :request do
       end
     end
   end
-
-  # describe "GET /show" do
-  #   it "returns http success" do
-  #     get "/users/show"
-  #     expect(response).to have_http_status(:success)
-  #   end
-  # end
-  #
-  # describe "GET /update" do
-  #   it "returns http success" do
-  #     get "/users/update"
-  #     expect(response).to have_http_status(:success)
-  #   end
-  # end
-  #
-  # describe "GET /delete" do
-  #   it "returns http success" do
-  #     get "/users/delete"
-  #     expect(response).to have_http_status(:success)
-  #   end
-  # end
-
 end

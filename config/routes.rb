@@ -1,13 +1,17 @@
 Rails.application.routes.draw do
   defaults format: :json do
     resources :lists do
-      member do
-        post '/share/:user_id', to: 'lists#share'
-      end
       resources :items
     end
 
-    resources :accounts
+    resources :invites, only: [:index, :show, :create, :destroy] do
+      member do
+        put '/resend', to: 'invites#resend'
+      end
+    end
+
+    put '/invites/accept', to: 'invites#accept', param: :token, as: :accept
+    resources :accounts, only: [:new, :create, :show, :destroy]
 
     post 'authenticate', to: 'authentication#authenticate'
 

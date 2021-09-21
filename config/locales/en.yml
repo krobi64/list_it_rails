@@ -30,13 +30,56 @@
 # available at https://guides.rubyonrails.org/i18n.html.
 
 en:
+  access:
+    errors:
+      unauthorized: Unauthorized Access
   activemodel:
     errors:
       models:
         authenticate_user:
           failure: Invalid credentials
 
+        authorize_api_request:
+          attributes:
+            token:
+              missing: Missing token
+              invalid: Invalid token
+              expired: Expired token
+
         create_account:
           attributes:
             base:
               failure: Failure creating account
+
+        accept_invite:
+          attributes:
+            token: Invalid invitation token
+      invalid_email: Invalid email address
+    success:
+      models:
+        send_invite: Invitation sent
+        accept_invite: List successfully added
+  activerecord:
+    models:
+      list:
+        errors:
+            not_found: List not found
+      user:
+        errors:
+            not_found: User not found
+            duplicate_email: Email is already in use
+            password: Password is missing one or more requirements.
+      invite:
+        errors:
+            email_in_use: Email is already in use
+            not_found: Invitation not found
+  routes:
+    errors:
+      not_found: Not Found
+  actioncontroller:
+    errors:
+      account:
+        not_found: No security token found. Please login or create an account.
+      list:
+        invalid_parameters: Invalid Payload, refer to the api documentation
+

@@ -2,7 +2,10 @@ class User < ApplicationRecord
 
   has_secure_password
 
-  has_and_belongs_to_many :lists
+  has_many :lists
+  has_and_belongs_to_many :all_lists, class_name: 'List', association_foreign_key: :list_id, dependent: :nullify
+  has_many :invites, foreign_key: 'recipient_id'
+  has_many :sent_invites, class_name: 'Invite', foreign_key: 'sender_id'
 
   # Reference https://medium.com/@Timothy_Fell/how-to-set-password-requirements-in-rails-d9081926923b
   PASSWORD_REQUIREMENTS = /\A
@@ -13,22 +16,36 @@ class User < ApplicationRecord
     (?=.*[[:^alnum:]])
   /x
 
-  validate :email_value
+  validates_with EmailValidator
 
   validates :email,
-            uniqueness: { case_sensitive: false, message: 'Email already in use' }
+            uniqueness: { case_sensitive: false, message: DUPLICATE_EMAIL }
 
   validates :password,
             confirmation: true,
             format: {
                 with: PASSWORD_REQUIREMENTS,
-                message: 'is missing one or more requirements.'
+                message: INVALID_PASSWORD
             }
 
-  private
+  def invite(invite_id)
+    invitation = invites.where(id: invite_id, recipient_id: id).or(sent_invites.where(id: invite_id, sender_id: id)).first
+    invitation || raise(ListItError::InvitationNotFound.new)
+  end
 
-    def email_value
-      errors.add(:email, 'Invalid email address') unless Truemail.valid?(email, with: :regex)
-    end
+  def full_name
+    "#{first_name} #{last_name}".strip
+  end
 
+  def list(list_id)
+    all_lists.where(list_id: list_id, user_id: id).first
+  end
+
+  def all_invites
+    sent_invites + invites
+  end
+
+  def shared_lists
+    all_lists.where.not(user_id: self.id)
+  end
 end
