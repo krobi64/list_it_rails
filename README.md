@@ -477,3 +477,46 @@ or
   "payload": "List not found"
 }
 ```
+## List Items
+Items are individual entries for a list that support the following actions:
+* Create
+* Update
+* Toggle the checked/unchecked status of the item
+* Delete
+
+### Create List Item
+A list item can be created by any user with access to the list.
+
+```http request
+POST /lists/:list_id/items
+```
+
+```json
+{
+  "name": "item_name"
+}
+```
+#### responses
+##### success
+* Status: 201
+* No body
+
+##### error
+* Status 400
+```json
+{
+  "status": "error",
+  "payload": {
+      "name": ["can not be blank"]
+  }
+}
+```
+or
+* Status: 404
+```json
+{
+  "status": "error",
+  "payload": "List not found"
+}
+```
+

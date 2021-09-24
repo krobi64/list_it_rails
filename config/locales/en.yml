@@ -73,6 +73,9 @@ en:
         errors:
             email_in_use: Email is already in use
             not_found: Invitation not found
+      item:
+        errors:
+          name: can not be blank
   routes:
     errors:
       not_found: Not Found

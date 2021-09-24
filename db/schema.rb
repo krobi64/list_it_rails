@@ -26,7 +26,7 @@ ActiveRecord::Schema.define(version: 2021_02_17_194459) do
   create_table "items", force: :cascade do |t|
     t.bigint "list_id", null: false
     t.string "name"
-    t.integer "state"
+    t.integer "state", default: 0
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["list_id"], name: "index_items_on_list_id"
