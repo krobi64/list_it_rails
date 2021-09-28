@@ -485,7 +485,7 @@ Items are individual entries for a list that support the following actions:
 * Delete
 
 ### Create List Item
-A list item can be created by any user with access to the list.
+A list item can be created by any user with access to the list. The item will be created and added to the bottom of the list.
 
 ```http request
 POST /lists/:list_id/items
@@ -512,6 +512,43 @@ POST /lists/:list_id/items
 }
 ```
 or
+* Status: 404
+```json
+{
+  "status": "error",
+  "payload": "List not found"
+}
+```
+## Get Items for a List
+
+Retrieve the items for a specific list. Returns the items in list order, regardless of whether the item has been checked or not.
+
+```http request
+GET /lists/:list_id/items
+```
+
+To retrieve only unchecked items:
+
+```http request
+GET /lists/:list_id/items?uc=1
+```
+### responses
+#### success
+
+* Status: 200
+
+```json
+[
+  {
+    "item_id": "the id",
+    "name": "the wording of the item",
+    "status": "checked/unchecked",
+    "order": "integer denoting the order placement in the list"
+  }
+]
+```
+
+#### error
 * Status: 404
 ```json
 {

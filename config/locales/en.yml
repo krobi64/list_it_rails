@@ -64,6 +64,7 @@ en:
       list:
         errors:
             not_found: List not found
+            name: can not be blank
       user:
         errors:
             not_found: User not found

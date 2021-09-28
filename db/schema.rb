@@ -27,8 +27,10 @@ ActiveRecord::Schema.define(version: 2021_02_17_194459) do
     t.bigint "list_id", null: false
     t.string "name"
     t.integer "state", default: 0
+    t.integer "order"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["list_id", "order"], name: "index_items_on_list_id_and_order"
     t.index ["list_id"], name: "index_items_on_list_id"
   end
 

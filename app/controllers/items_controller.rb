@@ -2,7 +2,8 @@ class ItemsController < ApplicationController
   before_action :current_list
 
   def index
-
+    result = params[:uc] == '1' ? current_list.unchecked_items : current_list.items
+    render json: message(:success, result)
   end
 
   def create

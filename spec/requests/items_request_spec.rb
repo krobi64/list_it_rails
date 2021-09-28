@@ -15,6 +15,10 @@ RSpec.describe 'Items', type: :request do
   let(:list_id) { list.id }
   let(:response_body) { JSON.parse response.body }
 
+  before do
+    2.times { |i| current_user.all_lists.create(name: "List #{i}", user: current_user)}
+  end
+
   context 'without a valid JWT' do
     before do
       get '/lists/38/items'
@@ -41,8 +45,17 @@ RSpec.describe 'Items', type: :request do
       it 'returns a created status' do
         expect(response).to have_http_status(:created)
       end
+
       it 'adds the item to the list' do
         expect(list.items.first.name).to eq(body[:item][:name])
+      end
+
+      it 'sets the item status to unchecked' do
+        expect(list.items.first.state).to eq(Item::ITEM_STATE[:unchecked])
+      end
+
+      it 'sets the correct order on the item' do
+        expect(list.items.first.order).to eq(1)
       end
 
       context 'when created by a shared user' do
@@ -60,10 +73,6 @@ RSpec.describe 'Items', type: :request do
 
         it 'adds the item to the list' do
           expect(list.items.first.name).to eq(body[:item][:name])
-        end
-
-        it 'sets the item status to unchecked' do
-          expect(list.items.first.state).to eq(Item::ITEM_STATE[:unchecked])
         end
       end
     end
@@ -89,7 +98,7 @@ RSpec.describe 'Items', type: :request do
       end
     end
 
-    context "with an invalid list" do
+    context 'with an invalid list' do
       let(:list_id) { 49 }
       it_behaves_like 'an invalid request'
 
@@ -103,4 +112,63 @@ RSpec.describe 'Items', type: :request do
     end
   end
 
+  describe 'GET /lists/:list_id/items' do
+    before do
+      3.times { |i| list.items.create(name: "Item #{i}") }
+      list.items.second.toggle_state
+    end
+
+    context 'getting all items' do
+      before do
+        get "/lists/#{list_id}/items", headers: header
+      end
+
+      it_behaves_like 'a successful request'
+
+      it 'returns the all of the items' do
+        expect(response_body['payload'].size).to eq(3)
+      end
+
+      it 'returns the items in order' do
+        actual = response_body['payload'].map { |i| i['order'] }
+        expect(actual).to eq([1, 2, 3])
+      end
+    end
+
+    context 'requesting unchecked items only ' do
+      before do
+        get "/lists/#{list_id}/items?uc=1", headers: header
+      end
+
+      it 'only returns the unchecked items' do
+        actual = response_body['payload'].all? { |i| i['state'] == Item::ITEM_STATE[:unchecked] }
+        expect(actual).to eq(true)
+      end
+
+      it 'returns the items in order' do
+        actual = response_body['payload'].map {|i| i['order']}
+        expect(actual).to eq([1,3])
+      end
+    end
+
+    context 'requesting items from an unauthorized list' do
+
+      let(:list_id) { recipient.lists.first.id }
+
+      before do
+        2.times { |i| recipient.all_lists.create(name: "List #{i}", user: recipient)}
+        get "/lists/#{list_id}/items", headers: header
+      end
+
+      it_behaves_like 'an invalid request'
+
+      it 'returns a :not_found status' do
+        expect(response).to have_http_status(:not_found)
+      end
+
+      it "returns a message #{LIST_NOT_FOUND}" do
+        expect(response_body['payload']).to eq(LIST_NOT_FOUND)
+      end
+    end
+  end
 end
