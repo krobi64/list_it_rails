@@ -46,8 +46,8 @@ RSpec.describe "Lists", type: :request do
         expect(response).to have_http_status(:bad_request)
       end
 
-      it "returns an error message \"can't be blank" do
-        expect(response_body['payload']['name']).to eq(["can't be blank"])
+      it "returns an error message #{LIST_NAME_BLANK}" do
+        expect(response_body['payload']['name']).to eq([LIST_NAME_BLANK])
       end
     end
   end
