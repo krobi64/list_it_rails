@@ -4,13 +4,17 @@ class List < ApplicationRecord
   has_many :items
   has_many :invites
 
+  validates :name, presence: { message: I18n.t('activerecord.models.list.errors.name') }
+
+  default_scope { select(:id, :name, :user_id) }
+
+  def unchecked_items
+    items.where(state: Item::ITEM_STATE[:unchecked])
+  end
+
   def shared_users
     users.where.not(user_id: user.id)
   end
-
-  validates :name, presence: true
-
-  default_scope { select(:id, :name, :user_id) }
 
   def as_json(options = nil)
     {

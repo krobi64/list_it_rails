@@ -11,6 +11,8 @@ module Messages
   INVALID_TOKEN = I18n.t('activemodel.errors.models.authorize_api_request.attributes.token.invalid')
   INVITATION_NOT_FOUND = I18n.t('activerecord.models.invite.errors.not_found')
   INVITATION_SENT=I18n.t('activemodel.success.models.send_invite')
+  ITEM_NAME_BLANK = I18n.t('activerecord.models.item.errors.name')
+  LIST_NAME_BLANK = I18n.t('activerecord.models.list.errors.name')
   LIST_NOT_FOUND = I18n.t('activerecord.models.list.errors.not_found')
   MISSING_TOKEN = I18n.t('activemodel.errors.models.authorize_api_request.attributes.token.missing')
   NOT_FOUND = I18n.t('routes.errors.not_found')
