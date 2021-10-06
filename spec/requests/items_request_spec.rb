@@ -14,6 +14,7 @@ RSpec.describe 'Items', type: :request do
   let(:list) { current_user.lists.first }
   let(:list_id) { list.id }
   let(:response_body) { JSON.parse response.body }
+  let(:payload) { response_body['payload'] }
 
   before do
     2.times { |i| current_user.all_lists.create(name: "List #{i}", user: current_user)}
@@ -94,7 +95,7 @@ RSpec.describe 'Items', type: :request do
       end
 
       it 'returns the appropriate error message' do
-        expect(response_body['payload']['name']).to eq([ITEM_NAME_BLANK])
+        expect(payload['name']).to eq([ITEM_NAME_BLANK])
       end
     end
 
@@ -107,7 +108,7 @@ RSpec.describe 'Items', type: :request do
       end
 
       it 'returns the appropriate error message' do
-        expect(response_body['payload']).to eq(LIST_NOT_FOUND)
+        expect(payload).to eq(LIST_NOT_FOUND)
       end
     end
   end
@@ -125,12 +126,16 @@ RSpec.describe 'Items', type: :request do
 
       it_behaves_like 'a successful request'
 
+      it 'returns an :ok status' do
+        expect(response).to have_http_status(:ok)
+      end
+
       it 'returns the all of the items' do
-        expect(response_body['payload'].size).to eq(3)
+        expect(payload.size).to eq(3)
       end
 
       it 'returns the items in order' do
-        actual = response_body['payload'].map { |i| i['order'] }
+        actual = payload.map { |i| i['order'] }
         expect(actual).to eq([1, 2, 3])
       end
     end
@@ -141,12 +146,12 @@ RSpec.describe 'Items', type: :request do
       end
 
       it 'only returns the unchecked items' do
-        actual = response_body['payload'].all? { |i| i['state'] == Item::ITEM_STATE[:unchecked] }
+        actual = payload.all? { |i| i['state'] == Item::ITEM_STATE[:unchecked] }
         expect(actual).to eq(true)
       end
 
       it 'returns the items in order' do
-        actual = response_body['payload'].map {|i| i['order']}
+        actual = payload.map {|i| i['order']}
         expect(actual).to eq([1,3])
       end
     end
@@ -167,7 +172,81 @@ RSpec.describe 'Items', type: :request do
       end
 
       it "returns a message #{LIST_NOT_FOUND}" do
-        expect(response_body['payload']).to eq(LIST_NOT_FOUND)
+        expect(payload).to eq(LIST_NOT_FOUND)
+      end
+    end
+  end
+
+  describe 'GET /lists/:list_id/items/:id' do
+    before do
+      3.times { |i| list.items.create(name: "Item #{i}") }
+      list.items.second.toggle_state
+    end
+
+    let(:item) { list.items.first }
+    let(:item_hash) {
+      {
+        "id" => item.id,
+        "name" => item.name,
+        "order" => item.order,
+        "state" => item.state
+      }
+    }
+
+    context 'correct retrieval' do
+      before do
+        get "/lists/#{list_id}/items/#{item.id}", headers: header
+      end
+
+      it_behaves_like 'a successful request'
+
+      it 'returns an :ok status' do
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'returns the item' do
+        expect(payload).to eq(item_hash)
+      end
+    end
+
+    context 'with an invalid list' do
+      let(:list_id) { recipient.lists.first.id }
+      let(:item_id) { recipient.lists.first.items.first.id }
+
+      before do
+        2.times { |i| recipient.all_lists.create(name: "List #{i}", user: recipient)}
+        recipient.lists.first.items.create(name: 'Invalid Item')
+        get "/lists/#{list_id}/items/#{item_id}", headers: header
+      end
+
+      it_behaves_like 'an invalid request'
+
+      it 'returns a :not_found status' do
+        expect(response).to have_http_status(:not_found)
+      end
+
+      it "returns the message #{LIST_NOT_FOUND}" do
+        expect(payload).to eq(LIST_NOT_FOUND)
+      end
+    end
+
+    context 'with an invalid item id' do
+      let(:item_id) { recipient.lists.first.items.first.id }
+
+      before do
+        2.times { |i| recipient.all_lists.create(name: "List #{i}", user: recipient)}
+        recipient.lists.first.items.create(name: 'Invalid Item')
+        get "/lists/#{list_id}/items/#{item_id}", headers: header
+      end
+
+      it_behaves_like 'an invalid request'
+
+      it 'returns a :not_found status' do
+        expect(response).to have_http_status(:not_found)
+      end
+
+      it "returns the message #{ITEM_NOT_FOUND}" do
+        expect(payload).to eq(ITEM_NOT_FOUND)
       end
     end
   end

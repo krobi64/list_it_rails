@@ -77,6 +77,7 @@ en:
       item:
         errors:
           name: can not be blank
+          not_found: Item not found
   routes:
     errors:
       not_found: Not Found

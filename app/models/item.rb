@@ -11,9 +11,18 @@ class Item < ApplicationRecord
   validates :name, presence: { message: Messages::ITEM_NAME_BLANK }
   default_scope { order(:order) }
 
-  def toggle_state
-    self.state = state ^ 1
+  def toggle_state(new_state = nil)
+    self.state = new_state || state ^ 1
     save!
+  end
+
+  def as_json(options = nil)
+    {
+      "id" => id,
+      "name" => name,
+      "state" => state,
+      "order" => order
+    }
   end
 
   private

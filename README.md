@@ -556,4 +556,33 @@ GET /lists/:list_id/items?uc=1
   "payload": "List not found"
 }
 ```
+## Get the details of a specific List Item
+
+```http request
+GET /lists/:list_id/items/:id
+```
+
+### responses
+#### success
+* Status: 200
+
+```json
+{
+  "item_id": "the id",
+  "name": "the wording of the item",
+  "order": "integer denoting the order placement in the list",
+  "status": "checked/unchecked"
+}
+```
+
+#### error
+* Status: 404
+```json
+{
+  "status": "error",
+  "payload": "List not found | Item not found"
+}
+```
+
+
 
