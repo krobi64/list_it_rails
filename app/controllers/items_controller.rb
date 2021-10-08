@@ -20,6 +20,15 @@ class ItemsController < ApplicationController
     render json: message(:success, current_item)
   end
 
+  def update
+    current_item.update(name: item_params[:name])
+    if current_item.valid?
+      head :no_content
+    else
+      render json: message(:error, current_item.errors), status: :bad_request
+    end
+  end
+
   private
     def current_list
       @current_list ||= current_user.all_lists.where(id: params[:list_id]).first

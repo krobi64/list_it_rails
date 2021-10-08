@@ -250,4 +250,98 @@ RSpec.describe 'Items', type: :request do
       end
     end
   end
+
+  describe 'PUT /lists/:list_id/items/:id' do
+    let(:item) { list.items.first }
+    let(:item_id) { item.id }
+    let(:body) {
+      {
+        item: {
+          name: 'New name'
+        }
+      }
+    }
+
+    before do
+      3.times { |i| list.items.create(name: "Item #{i}") }
+      put "/lists/#{list_id}/items/#{item_id}", params: body, headers: header
+    end
+
+    context 'with a correct request' do
+      it_behaves_like 'a successful request without a body'
+
+      it 'returns a :no_content status' do
+        expect(response).to have_http_status(:no_content)
+      end
+
+      it 'updates the name' do
+        expect(list.items.first.name).to eq('New name')
+      end
+    end
+
+    context 'with an invalid payload' do
+      let(:body) { { name: 'A different name' } }
+
+      it_behaves_like 'an invalid request'
+
+      it 'returns a :bad_request status' do
+        expect(response).to have_http_status(:bad_request)
+      end
+
+      it "returns a payload with #{INVALID_PARAMETER}" do
+        expect(payload).to eq(INVALID_PARAMETER)
+      end
+    end
+
+    context 'with an empty payload' do
+      let(:body) { {} }
+
+      it_behaves_like 'an invalid request'
+
+      it 'returns a :bad_request status' do
+        expect(response).to have_http_status(:bad_request)
+      end
+
+      it "returns a payload with #{INVALID_PARAMETER}" do
+        expect(payload).to eq(INVALID_PARAMETER)
+      end
+    end
+
+    context 'with an invalid list' do
+      before do
+        3.times { |i| list.items.create(name: "Item #{i}") }
+        put "/lists/49/items/#{item_id}", params: body, headers: header
+      end
+
+      it_behaves_like 'an invalid request'
+
+      it 'returns a :not_found status' do
+        expect(response).to have_http_status(:not_found)
+      end
+
+      it "returns a message of #{LIST_NOT_FOUND}" do
+        expect(payload).to eq(LIST_NOT_FOUND)
+      end
+    end
+
+    context 'with an invalid item' do
+      before do
+        2.times { |i| recipient.all_lists.create(name: "List #{i}", user: recipient)}
+        recipient.lists.first.items.create(name: 'Invalid Item')
+        item_id = recipient.lists.first.items.first.id
+
+        put "/lists/#{list_id}/items/#{item_id}", params: body, headers: header
+      end
+
+      it_behaves_like 'an invalid request'
+
+      it 'returns a :not_found status' do
+        expect(response).to have_http_status(:not_found)
+      end
+
+      it "returns a message of #{ITEM_NOT_FOUND}" do
+        expect(payload).to eq(ITEM_NOT_FOUND)
+      end
+    end
+  end
 end

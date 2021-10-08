@@ -584,5 +584,41 @@ GET /lists/:list_id/items/:id
 }
 ```
 
+## Update a List Item
 
+```http request
+PUT /lists/:list_id/items/:id
+```
+
+```json
+{
+  "item": {
+    "name": "Item name"
+  }
+}
+```
+  
+### responses
+#### success
+* Status: 204
+* No body
+
+#### error
+* Status: 400
+
+```json
+{
+  "status": "error",
+  "payload": "Invalid Payload, refer to the api documentation"
+}
+```
+
+* Status: 404
+
+```json
+{
+  "status": "error",
+  "payload": "List not found | Item not found"
+}
+```
 
