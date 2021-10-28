@@ -11,7 +11,12 @@ RSpec.describe 'Items', type: :request do
       AUTHORIZATION: "token #{token}"
     }
   }
-  let(:list) { current_user.lists.first }
+  let(:lists) { 2.times { |i| current_user.all_lists.create(name: "List #{i}", user: current_user)}}
+  let(:list) { lists && current_user.lists.first }
+  let(:list_item) { list.items.create(name: 'List Item') }
+  let(:recipient_lists) { 2.times { |i| recipient.all_lists.create(name: "List #{i}", user: recipient)} }
+  let(:recipient_list) { recipient_lists && recipient.lists.first }
+  let(:recipient_item) { recipient_list.items.create(name: 'Invalid Item') }
   let(:list_id) { list.id }
   let(:response_body) { JSON.parse response.body }
   let(:payload) { response_body['payload'] }
@@ -56,7 +61,7 @@ RSpec.describe 'Items', type: :request do
       end
 
       it 'sets the correct order on the item' do
-        expect(list.items.first.order).to eq(1)
+        expect(list.items.first.order).to eq(0)
       end
 
       context 'when created by a shared user' do
@@ -116,14 +121,10 @@ RSpec.describe 'Items', type: :request do
   describe 'GET /lists/:list_id/items' do
     before do
       3.times { |i| list.items.create(name: "Item #{i}") }
-      list.items.second.toggle_state
+      get "/lists/#{list_id}/items", headers: header
     end
 
     context 'getting all items' do
-      before do
-        get "/lists/#{list_id}/items", headers: header
-      end
-
       it_behaves_like 'a successful request'
 
       it 'returns an :ok status' do
@@ -136,12 +137,13 @@ RSpec.describe 'Items', type: :request do
 
       it 'returns the items in order' do
         actual = payload.map { |i| i['order'] }
-        expect(actual).to eq([1, 2, 3])
+        expect(actual).to eq([0, 1, 2])
       end
     end
 
     context 'requesting unchecked items only ' do
       before do
+        list.items.second.toggle_state
         get "/lists/#{list_id}/items?uc=1", headers: header
       end
 
@@ -152,18 +154,13 @@ RSpec.describe 'Items', type: :request do
 
       it 'returns the items in order' do
         actual = payload.map {|i| i['order']}
-        expect(actual).to eq([1,3])
+        expect(actual).to eq([0,2])
       end
     end
 
     context 'requesting items from an unauthorized list' do
 
-      let(:list_id) { recipient.lists.first.id }
-
-      before do
-        2.times { |i| recipient.all_lists.create(name: "List #{i}", user: recipient)}
-        get "/lists/#{list_id}/items", headers: header
-      end
+      let(:list_id) { recipient_list.id }
 
       it_behaves_like 'an invalid request'
 
@@ -179,25 +176,20 @@ RSpec.describe 'Items', type: :request do
 
   describe 'GET /lists/:list_id/items/:id' do
     before do
-      3.times { |i| list.items.create(name: "Item #{i}") }
-      list.items.second.toggle_state
+      get "/lists/#{list.id}/items/#{list_item.id}", headers: header
     end
 
-    let(:item) { list.items.first }
     let(:item_hash) {
       {
-        "id" => item.id,
-        "name" => item.name,
-        "order" => item.order,
-        "state" => item.state
+        "id" => list_item.id,
+        "name" => list_item.name,
+        "order" => list_item.order,
+        "state" => list_item.state,
+        "sort_token" => list_item.token
       }
     }
 
     context 'correct retrieval' do
-      before do
-        get "/lists/#{list_id}/items/#{item.id}", headers: header
-      end
-
       it_behaves_like 'a successful request'
 
       it 'returns an :ok status' do
@@ -210,12 +202,10 @@ RSpec.describe 'Items', type: :request do
     end
 
     context 'with an invalid list' do
-      let(:list_id) { recipient.lists.first.id }
-      let(:item_id) { recipient.lists.first.items.first.id }
+      let(:list_id) { recipient_list.id }
+      let(:item_id) { recipient_item.id }
 
       before do
-        2.times { |i| recipient.all_lists.create(name: "List #{i}", user: recipient)}
-        recipient.lists.first.items.create(name: 'Invalid Item')
         get "/lists/#{list_id}/items/#{item_id}", headers: header
       end
 
@@ -231,13 +221,7 @@ RSpec.describe 'Items', type: :request do
     end
 
     context 'with an invalid item id' do
-      let(:item_id) { recipient.lists.first.items.first.id }
-
-      before do
-        2.times { |i| recipient.all_lists.create(name: "List #{i}", user: recipient)}
-        recipient.lists.first.items.create(name: 'Invalid Item')
-        get "/lists/#{list_id}/items/#{item_id}", headers: header
-      end
+      let(:list_item) { recipient_item }
 
       it_behaves_like 'an invalid request'
 
@@ -340,6 +324,95 @@ RSpec.describe 'Items', type: :request do
       end
 
       it "returns a message of #{ITEM_NOT_FOUND}" do
+        expect(payload).to eq(ITEM_NOT_FOUND)
+      end
+    end
+  end
+
+  describe 'PUT /lists/:list_id/items/reorder' do
+    let(:item) { list.items.first }
+    let(:item_id) { item.id }
+    let(:body) {
+      {
+        order: [
+          list.items.third.token,
+          list.items.first.token,
+          list.items.second.token
+        ]
+      }
+    }
+
+    before do
+      3.times { |i| list.items.create(name: "Item #{i}") }
+      put "/lists/#{list_id}/items/reorder", params: body, headers: header
+    end
+
+    context 'with a correct request' do
+      it_behaves_like 'a successful request'
+
+      it 'returns an :ok status' do
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'returns the list of items in their new order' do
+        actual = payload.map { |item| item['name'] }
+        expect(["Item 2", "Item 0", "Item 1"]).to eq(actual)
+      end
+    end
+
+    context 'with an invalid payload' do
+      let(:body) {
+        {
+          order: [
+            list.items.third.token,
+            list.items.second.token
+          ]
+        }
+      }
+
+      it_behaves_like 'an invalid request'
+
+      it 'returns a :bad_request status' do
+        expect(response).to have_http_status(:bad_request)
+      end
+
+      it "returns a message of #{INVALID_ITEMS}" do
+        expect(payload).to eq(INVALID_ITEMS)
+      end
+    end
+
+    context 'with an invalid list' do
+      let(:list_id) { 49 }
+
+      it_behaves_like 'an invalid request'
+
+      it 'returns a :not_found status' do
+        expect(response).to have_http_status(:not_found)
+      end
+
+      it "returns a message of #{LIST_NOT_FOUND}" do
+        expect(payload).to eq(LIST_NOT_FOUND)
+      end
+    end
+
+    context 'with an invalid item id' do
+      let(:body) {
+        {
+          order: [
+            list.items.third.token,
+            list.items.second.token,
+            recipient_item.token
+          ]
+        }
+      }
+
+      it_behaves_like 'an invalid request'
+
+      it 'returns a :not_found status' do
+        expect(response).to have_http_status(:not_found)
+      end
+
+      it "returns the message #{ITEM_NOT_FOUND}" do
         expect(payload).to eq(ITEM_NOT_FOUND)
       end
     end

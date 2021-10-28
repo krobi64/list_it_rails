@@ -1,6 +1,7 @@
 class ItemsController < ApplicationController
   before_action :current_list
   before_action :current_item, only: [:show, :update, :toggle, :destroy]
+  rescue_from ListItError::InvalidListMembers, with: :invalid_items
 
   def index
     result = params[:uc] == '1' ? current_list.unchecked_items : current_list.items
@@ -29,6 +30,12 @@ class ItemsController < ApplicationController
     end
   end
 
+  def reorder
+    items = params[:order]
+    ResortListItems.new(current_list, items).call
+    render json: message(:success, current_list.items)
+  end
+
   private
     def current_list
       @current_list ||= current_user.all_lists.where(id: params[:list_id]).first
@@ -38,7 +45,12 @@ class ItemsController < ApplicationController
     def current_item
       @current_item ||= current_list.items.find(params[:id])
     end
+
     def item_params
       params.require(:item).permit(:name)
+    end
+
+    def invalid_items
+      render json: message(:error, INVALID_ITEMS), status: :bad_request
     end
 end

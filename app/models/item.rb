@@ -7,6 +7,7 @@ class Item < ApplicationRecord
   }
 
   before_create :set_order
+  after_create :set_token
 
   validates :name, presence: { message: Messages::ITEM_NAME_BLANK }
   default_scope { order(:order) }
@@ -21,15 +22,21 @@ class Item < ApplicationRecord
       "id" => id,
       "name" => name,
       "state" => state,
-      "order" => order
+      "order" => order,
+      "sort_token" => token
     }
   end
 
   private
 
+    # sort_order should be 0-based list
     def set_order
-      max_order = Item.where(list: list).maximum('order')
-      self.order = (max_order || 0) + 1
+      self.order = (list.items.maximum(:order) || -1) + 1
+    end
+
+    def set_token
+      self.token = ItemVerifier.instance.generate("Item#{id}")
+      save!
     end
 
 end

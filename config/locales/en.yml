@@ -78,6 +78,7 @@ en:
         errors:
           name: can not be blank
           not_found: Item not found
+          invalid_items: Invalid Payload, refer to the api documentation
   routes:
     errors:
       not_found: Not Found

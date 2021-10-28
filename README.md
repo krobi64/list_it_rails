@@ -499,7 +499,16 @@ POST /lists/:list_id/items
 #### responses
 ##### success
 * Status: 201
-* No body
+
+```json
+{
+  "id": "item_id",
+  "name": "item_name",
+  "order": "order position in the list",
+  "state": "integer value - 0: unchecked | 1:checked",
+  "sort_token": "token for /reorder payload"
+}
+```
 
 ##### error
 * Status 400
@@ -540,10 +549,11 @@ GET /lists/:list_id/items?uc=1
 ```json
 [
   {
-    "item_id": "the id",
+    "id": "item_id",
     "name": "the wording of the item",
-    "status": "checked/unchecked",
-    "order": "integer denoting the order placement in the list"
+    "state": "integer value - 0: unchecked | 1:checked",
+    "order": "integer denoting the order placement in the list",
+    "sort_token": "token for /reorder payload"
   }
 ]
 ```
@@ -568,10 +578,11 @@ GET /lists/:list_id/items/:id
 
 ```json
 {
-  "item_id": "the id",
+  "id": "item_id",
   "name": "the wording of the item",
   "order": "integer denoting the order placement in the list",
-  "status": "checked/unchecked"
+  "state": "integer value - 0: unchecked | 1:checked",
+  "sort_token": "token for /reorder payload"
 }
 ```
 
@@ -613,6 +624,58 @@ PUT /lists/:list_id/items/:id
 }
 ```
 
+* Status: 404
+
+```json
+{
+  "status": "error",
+  "payload": "List not found | Item not found"
+}
+```
+
+## Reordering the items in a List
+```http request
+PUT /lists/:list_id/items/reorder
+```
+
+An ordered list of all the list items must be included. Use an array of `item.sort_token` in the `json` body.
+
+```json
+[
+  "first_item.sort_token",
+  "second_item.sort_token",
+  "..."
+]
+```
+
+### response
+
+#### success
+* Status: 200
+
+```json
+{
+  "status": "success",
+  "payload": [
+    {
+      "id": "first_item.id",
+      "name": "first_item.name",
+      "order": 1,
+      "state": "integer value - 0: unchecked | 1:checked",
+      "sort_token": "first_item.sort_token"
+    },
+    {
+      "id": "second_item.id",
+      "name": "second_item.name",
+      "order": 2,
+      "state": "integer value - 0: unchecked | 1:checked",
+      "sort_token": "token for /reorder payload"
+    }
+  ]
+}
+```
+
+#### error
 * Status: 404
 
 ```json

@@ -9,6 +9,7 @@ module Messages
   INVALID_PARAMETER = I18n.t('actioncontroller.errors.list.invalid_parameters')
   INVALID_PASSWORD = I18n.t('activerecord.models.user.errors.password')
   INVALID_TOKEN = I18n.t('activemodel.errors.models.authorize_api_request.attributes.token.invalid')
+  INVALID_ITEMS = I18n.t('activerecord.models.item.errors.invalid_items')
   INVITATION_NOT_FOUND = I18n.t('activerecord.models.invite.errors.not_found')
   INVITATION_SENT=I18n.t('activemodel.success.models.send_invite')
   ITEM_NAME_BLANK = I18n.t('activerecord.models.item.errors.name')
