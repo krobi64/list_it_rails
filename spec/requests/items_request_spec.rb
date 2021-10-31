@@ -285,6 +285,7 @@ RSpec.describe 'Items', type: :request do
     end
 
     context 'with an invalid item' do
+      let(:item_id) { recipient_item.id }
       before do
         put "/lists/#{list_id}/items/#{item_id}", params: body, headers: header
       end
@@ -377,6 +378,96 @@ RSpec.describe 'Items', type: :request do
       it "returns the message #{ITEM_NOT_FOUND}" do
         expect(payload).to eq(ITEM_NOT_FOUND)
       end
+    end
+  end
+
+  describe "PUT /lists/:list_id/items/:item_id/toggle" do
+    before do
+      3.times { |i| list.items.create(name: "Item #{i}") }
+      list.items.second.toggle_state
+    end
+
+    context 'without a JWT' do
+      let(:header) { {} }
+      let(:item_id) { list_item.id }
+
+      before do
+        put "/lists/#{list.id}/items/#{item_id}/toggle", headers: header
+      end
+
+      it_behaves_like 'a request that fails without a valid JWT'
+    end
+
+    context 'without a state param' do
+      let(:item_id) { list_item.id }
+
+      before do
+        put "/lists/#{list.id}/items/#{item_id}/toggle", headers: header
+      end
+
+      it_behaves_like 'a successful request without a body'
+
+      it 'returns a status of :no_content' do
+        expect(response).to have_http_status(:no_content)
+      end
+
+      it 'toggles the item state' do
+        list_item.reload
+        expect(list_item.state).to eq(Item::ITEM_STATE[:checked])
+      end
+
+      context 'undoing the check' do
+        let(:list_item) { list.items.second }
+
+        it 'toggles back to unchecked' do
+          list_item.reload
+          expect(list_item.state).to eq(Item::ITEM_STATE[:unchecked])
+        end
+      end
+    end
+
+    context 'with a state parameter' do
+      let(:item_id) { list_item.id }
+
+      before do
+        put "/lists/#{list.id}/items/#{item_id}/toggle?state=0", headers: header
+      end
+
+      it_behaves_like 'a successful request without a body'
+
+      it 'returns a :no_content status' do
+        expect(response).to have_http_status(:no_content)
+      end
+
+      it 'sets the correct state' do
+        list_item.reload
+        expect(list_item.state).to eq(Item::ITEM_STATE[:unchecked])
+      end
+
+      context 'converse' do
+        let(:list_item) { list.items.second }
+
+        it 'sets the correct state' do
+          list_item.reload
+          expect(list_item.state).to eq(Item::ITEM_STATE[:unchecked])
+        end
+      end
+    end
+
+    context 'with an invalid list' do
+      before do
+        put '/lists/49/items/1/toggle', headers: header
+      end
+
+      it_behaves_like 'a request with an invalid list'
+    end
+
+    context 'with an invalid item' do
+      before do
+        put "/lists/#{list_id}/items/#{recipient_item.id}/toggle", headers: header
+      end
+
+      it_behaves_like 'a request with an invalid list item'
     end
   end
 end

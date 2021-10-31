@@ -684,4 +684,28 @@ An ordered list of all the list items must be included. Use an array of `item.so
   "payload": "List not found | Item not found"
 }
 ```
+## Checking/Unchecking an Item
+Marking/Unmarking as completed
+
+```http request
+PUT /lists/:list_id/items/:item_id/toggle?state=0|1
+```
+* state: optional (if not provided, it simply flips the state value of the persisted item)
+  * 0: unchecked
+  * 1: checked
+
+### responses
+#### success
+* Status: 204
+* No body
+
+#### error
+* Status: 404
+
+```json
+{
+  "status": "error",
+  "payload": "List not found | Item not found"
+}
+```
 

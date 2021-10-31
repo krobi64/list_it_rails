@@ -36,6 +36,11 @@ class ItemsController < ApplicationController
     render json: message(:success, current_list.items)
   end
 
+  def toggle
+    current_item.toggle_state(params[:state])
+    head :no_content
+  end
+
   private
     def current_list
       @current_list ||= current_user.all_lists.where(id: params[:list_id]).first

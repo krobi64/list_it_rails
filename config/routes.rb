@@ -5,6 +5,9 @@ Rails.application.routes.draw do
         collection do
           put '/reorder', to: 'items#reorder'
         end
+        member do
+          put '/toggle', to: 'items#toggle'
+        end
       end
     end
 
