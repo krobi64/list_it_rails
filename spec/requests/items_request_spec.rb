@@ -25,13 +25,6 @@ RSpec.describe 'Items', type: :request do
     2.times { |i| current_user.all_lists.create(name: "List #{i}", user: current_user)}
   end
 
-  context 'without a valid JWT' do
-    before do
-      get '/lists/38/items'
-    end
-    it_behaves_like 'a request that fails without a valid JWT'
-  end
-
   describe 'POST /lists/:list_id/items' do
     let(:body) {
       {
@@ -44,6 +37,12 @@ RSpec.describe 'Items', type: :request do
     before do
       2.times { |i| current_user.all_lists.create(name: "List #{i}", user: current_user)}
       post "/lists/#{list_id}/items", params: body, headers: header
+    end
+
+    context 'without a JWT' do
+      let(:header) { {} }
+
+      it_behaves_like 'a request that fails without a valid JWT'
     end
 
     context 'with valid parameters' do
@@ -106,15 +105,7 @@ RSpec.describe 'Items', type: :request do
 
     context 'with an invalid list' do
       let(:list_id) { 49 }
-      it_behaves_like 'an invalid request'
-
-      it 'returns a :not_found status' do
-        expect(response).to have_http_status(:not_found)
-      end
-
-      it 'returns the appropriate error message' do
-        expect(payload).to eq(LIST_NOT_FOUND)
-      end
+      it_behaves_like 'a request with an invalid list'
     end
   end
 
@@ -122,6 +113,12 @@ RSpec.describe 'Items', type: :request do
     before do
       3.times { |i| list.items.create(name: "Item #{i}") }
       get "/lists/#{list_id}/items", headers: header
+    end
+
+    context 'without a JWT' do
+      let(:header) { {} }
+
+      it_behaves_like 'a request that fails without a valid JWT'
     end
 
     context 'getting all items' do
@@ -162,15 +159,7 @@ RSpec.describe 'Items', type: :request do
 
       let(:list_id) { recipient_list.id }
 
-      it_behaves_like 'an invalid request'
-
-      it 'returns a :not_found status' do
-        expect(response).to have_http_status(:not_found)
-      end
-
-      it "returns a message #{LIST_NOT_FOUND}" do
-        expect(payload).to eq(LIST_NOT_FOUND)
-      end
+      it_behaves_like 'a request with an invalid list'
     end
   end
 
@@ -188,6 +177,12 @@ RSpec.describe 'Items', type: :request do
         "sort_token" => list_item.token
       }
     }
+
+    context 'without a JWT' do
+      let(:header) { {} }
+
+      it_behaves_like 'a request that fails without a valid JWT'
+    end
 
     context 'correct retrieval' do
       it_behaves_like 'a successful request'
@@ -209,29 +204,13 @@ RSpec.describe 'Items', type: :request do
         get "/lists/#{list_id}/items/#{item_id}", headers: header
       end
 
-      it_behaves_like 'an invalid request'
-
-      it 'returns a :not_found status' do
-        expect(response).to have_http_status(:not_found)
-      end
-
-      it "returns the message #{LIST_NOT_FOUND}" do
-        expect(payload).to eq(LIST_NOT_FOUND)
-      end
+      it_behaves_like 'a request with an invalid list'
     end
 
     context 'with an invalid item id' do
       let(:list_item) { recipient_item }
 
-      it_behaves_like 'an invalid request'
-
-      it 'returns a :not_found status' do
-        expect(response).to have_http_status(:not_found)
-      end
-
-      it "returns the message #{ITEM_NOT_FOUND}" do
-        expect(payload).to eq(ITEM_NOT_FOUND)
-      end
+      it_behaves_like 'a request with an invalid list item'
     end
   end
 
@@ -249,6 +228,12 @@ RSpec.describe 'Items', type: :request do
     before do
       3.times { |i| list.items.create(name: "Item #{i}") }
       put "/lists/#{list_id}/items/#{item_id}", params: body, headers: header
+    end
+
+    context 'without a JWT' do
+      let(:header) { {} }
+
+      it_behaves_like 'a request that fails without a valid JWT'
     end
 
     context 'with a correct request' do
@@ -293,39 +278,18 @@ RSpec.describe 'Items', type: :request do
 
     context 'with an invalid list' do
       before do
-        3.times { |i| list.items.create(name: "Item #{i}") }
         put "/lists/49/items/#{item_id}", params: body, headers: header
       end
 
-      it_behaves_like 'an invalid request'
-
-      it 'returns a :not_found status' do
-        expect(response).to have_http_status(:not_found)
-      end
-
-      it "returns a message of #{LIST_NOT_FOUND}" do
-        expect(payload).to eq(LIST_NOT_FOUND)
-      end
+      it_behaves_like 'a request with an invalid list'
     end
 
     context 'with an invalid item' do
       before do
-        2.times { |i| recipient.all_lists.create(name: "List #{i}", user: recipient)}
-        recipient.lists.first.items.create(name: 'Invalid Item')
-        item_id = recipient.lists.first.items.first.id
-
         put "/lists/#{list_id}/items/#{item_id}", params: body, headers: header
       end
 
-      it_behaves_like 'an invalid request'
-
-      it 'returns a :not_found status' do
-        expect(response).to have_http_status(:not_found)
-      end
-
-      it "returns a message of #{ITEM_NOT_FOUND}" do
-        expect(payload).to eq(ITEM_NOT_FOUND)
-      end
+      it_behaves_like 'a request with an invalid list item'
     end
   end
 
@@ -345,6 +309,12 @@ RSpec.describe 'Items', type: :request do
     before do
       3.times { |i| list.items.create(name: "Item #{i}") }
       put "/lists/#{list_id}/items/reorder", params: body, headers: header
+    end
+
+    context 'without a JWT' do
+      let(:header) { {} }
+
+      it_behaves_like 'a request that fails without a valid JWT'
     end
 
     context 'with a correct request' do
@@ -384,15 +354,7 @@ RSpec.describe 'Items', type: :request do
     context 'with an invalid list' do
       let(:list_id) { 49 }
 
-      it_behaves_like 'an invalid request'
-
-      it 'returns a :not_found status' do
-        expect(response).to have_http_status(:not_found)
-      end
-
-      it "returns a message of #{LIST_NOT_FOUND}" do
-        expect(payload).to eq(LIST_NOT_FOUND)
-      end
+      it_behaves_like 'a request with an invalid list'
     end
 
     context 'with an invalid item id' do

@@ -16,7 +16,6 @@
 ENV['RAILS_ENV'] = 'test'
 require 'database_cleaner/active_record'
 DatabaseCleaner.strategy = [:truncation, except: %w[ar_internal_metadata]]
-require_relative './support/shared_response'
 
 RSpec.configure do |config|
   config.before(:each) do
