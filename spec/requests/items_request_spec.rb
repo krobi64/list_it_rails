@@ -381,7 +381,7 @@ RSpec.describe 'Items', type: :request do
     end
   end
 
-  describe "PUT /lists/:list_id/items/:item_id/toggle" do
+  describe 'PUT /lists/:list_id/items/:item_id/toggle' do
     before do
       3.times { |i| list.items.create(name: "Item #{i}") }
       list.items.second.toggle_state
@@ -466,6 +466,44 @@ RSpec.describe 'Items', type: :request do
       before do
         put "/lists/#{list_id}/items/#{recipient_item.id}/toggle", headers: header
       end
+
+      it_behaves_like 'a request with an invalid list item'
+    end
+  end
+
+  describe 'DELETE /lists/:list_id/items/:item_id' do
+    let(:item_id) { list_item.id }
+
+    before do
+      delete "/lists/#{list_id}/items/#{item_id}", headers: header
+    end
+
+    context 'without a JWT' do
+      let(:header) { {} }
+
+      it_behaves_like 'a request that fails without a valid JWT'
+    end
+
+    context 'with a valid list item' do
+      it_behaves_like 'a successful request without a body'
+
+      it 'returns a :no_content status' do
+        expect(response).to have_http_status(:no_content)
+      end
+
+      it 'deletes the item' do
+        expect(Item.exists?(item_id)).to eq(false)
+      end
+    end
+
+    context 'with an invalid list' do
+      let(:list_id) { 49 }
+
+      it_behaves_like 'a request with an invalid list'
+    end
+
+    context 'with an invalid item' do
+      let(:item_id) { recipient_item.id }
 
       it_behaves_like 'a request with an invalid list item'
     end

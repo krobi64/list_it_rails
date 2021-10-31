@@ -708,4 +708,23 @@ PUT /lists/:list_id/items/:item_id/toggle?state=0|1
   "payload": "List not found | Item not found"
 }
 ```
+## Deleting an Item
+```http request
+DELETE /lists/:list_id/items/:item_id
+```
+### responses
+#### success
+* Status: 204
+* No body
+
+#### error
+* Status: 404
+
+```json
+{
+  "status": "error",
+  "payload": "List not found | Item not found"
+}
+```
+
 

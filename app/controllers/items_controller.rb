@@ -41,6 +41,11 @@ class ItemsController < ApplicationController
     head :no_content
   end
 
+  def destroy
+    current_item.destroy
+    head :no_content
+  end
+
   private
     def current_list
       @current_list ||= current_user.all_lists.where(id: params[:list_id]).first
