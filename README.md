@@ -480,6 +480,7 @@ or
 ## List Items
 Items are individual entries for a list that support the following actions:
 * Create
+* View Details
 * Update
 * Toggle the checked/unchecked status of the item
 * Delete
