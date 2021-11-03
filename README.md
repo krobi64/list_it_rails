@@ -642,11 +642,13 @@ PUT /lists/:list_id/items/reorder
 An ordered list of all the list items must be included. Use an array of `item.token` in the `json` body.
 
 ```json
-[
-  "first_item.token",
-  "second_item.token",
-  "..."
-]
+{
+  "order": [
+    "first_item.token",
+    "second_item.token",
+    "..."
+  ]
+}
 ```
 
 ### response
