@@ -23,7 +23,7 @@ class Item < ApplicationRecord
       "name" => name,
       "state" => state,
       "order" => order,
-      "sort_token" => token
+      "token" => token
     }
   end
 

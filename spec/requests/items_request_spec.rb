@@ -46,9 +46,14 @@ RSpec.describe 'Items', type: :request do
     end
 
     context 'with valid parameters' do
-      it_behaves_like 'a successful request without a body'
+      it_behaves_like 'a successful request'
       it 'returns a created status' do
         expect(response).to have_http_status(:created)
+      end
+
+      it 'returns the item' do
+        expected = list.items.first.attributes.except('created_at', 'updated_at', 'list_id')
+        expect(payload).to eq(expected)
       end
 
       it 'adds the item to the list' do
@@ -70,7 +75,7 @@ RSpec.describe 'Items', type: :request do
           recipient.all_lists << list
           post "/lists/#{list_id}/items", params: body, headers: header
         end
-        it_behaves_like 'a successful request without a body'
+        it_behaves_like 'a successful request'
 
         it 'returns the :created status' do
           expect(response).to have_http_status(:created)
@@ -174,7 +179,7 @@ RSpec.describe 'Items', type: :request do
         "name" => list_item.name,
         "order" => list_item.order,
         "state" => list_item.state,
-        "sort_token" => list_item.token
+        "token" => list_item.token
       }
     }
 

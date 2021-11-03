@@ -11,7 +11,7 @@ class ItemsController < ApplicationController
   def create
     item = current_list.items.create(item_params)
     if item.persisted?
-      head :created
+      render json: message(:success, item), status: :created
     else
       render json: message(:error, item.errors), status: :bad_request
     end

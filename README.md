@@ -507,7 +507,7 @@ POST /lists/:list_id/items
   "name": "item_name",
   "order": "order position in the list",
   "state": "integer value - 0: unchecked | 1:checked",
-  "sort_token": "token for /reorder payload"
+  "token": "token for /reorder payload"
 }
 ```
 
@@ -554,7 +554,7 @@ GET /lists/:list_id/items?uc=1
     "name": "the wording of the item",
     "state": "integer value - 0: unchecked | 1:checked",
     "order": "integer denoting the order placement in the list",
-    "sort_token": "token for /reorder payload"
+    "token": "token for /reorder payload"
   }
 ]
 ```
@@ -583,7 +583,7 @@ GET /lists/:list_id/items/:id
   "name": "the wording of the item",
   "order": "integer denoting the order placement in the list",
   "state": "integer value - 0: unchecked | 1:checked",
-  "sort_token": "token for /reorder payload"
+  "token": "token for /reorder payload"
 }
 ```
 
@@ -639,12 +639,12 @@ PUT /lists/:list_id/items/:id
 PUT /lists/:list_id/items/reorder
 ```
 
-An ordered list of all the list items must be included. Use an array of `item.sort_token` in the `json` body.
+An ordered list of all the list items must be included. Use an array of `item.token` in the `json` body.
 
 ```json
 [
-  "first_item.sort_token",
-  "second_item.sort_token",
+  "first_item.token",
+  "second_item.token",
   "..."
 ]
 ```
@@ -663,14 +663,14 @@ An ordered list of all the list items must be included. Use an array of `item.so
       "name": "first_item.name",
       "order": 1,
       "state": "integer value - 0: unchecked | 1:checked",
-      "sort_token": "first_item.sort_token"
+      "token": "first_item.token"
     },
     {
       "id": "second_item.id",
       "name": "second_item.name",
       "order": 2,
       "state": "integer value - 0: unchecked | 1:checked",
-      "sort_token": "token for /reorder payload"
+      "token": "token for /reorder payload"
     }
   ]
 }
