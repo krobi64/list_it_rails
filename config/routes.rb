@@ -1,7 +1,14 @@
 Rails.application.routes.draw do
   defaults format: :json do
     resources :lists do
-      resources :items
+      resources :items do
+        collection do
+          put '/reorder', to: 'items#reorder'
+        end
+        member do
+          put '/toggle', to: 'items#toggle'
+        end
+      end
     end
 
     resources :invites, only: [:index, :show, :create, :destroy] do
